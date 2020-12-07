@@ -1,2 +1,11 @@
 *.class
-*.log
+
+.bsp/
+.idea/
+
+build.sbt
+project/build.properties
+
+project/target/
+
+target/
