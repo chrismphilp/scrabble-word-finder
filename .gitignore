@@ -1,9 +1,11 @@
 *.class
 *.log
 
-build/
-gradle/
-.gradle/
-.idea/
+.bsp
+build
+.idea
+target
 
-settings.gradle
+project/project/
+project/target/
+
