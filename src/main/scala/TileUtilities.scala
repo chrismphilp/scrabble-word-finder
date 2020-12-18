@@ -29,7 +29,7 @@ object TileUtilities {
     for (_ <- 0 until 1) buffer += X()
     for (_ <- 0 until 2) buffer += Y()
     for (_ <- 0 until 1) buffer += Z()
-    for (_ <- 0 until 2) buffer += BLANK()
+    for (_ <- 0 until 2) buffer += Blank()
     new Bag(buffer)
   }
 
@@ -59,5 +59,8 @@ object TileUtilities {
   def X(): PlayerTile = new PlayerTile('X', 8)
   def Y(): PlayerTile = new PlayerTile('Y', 4)
   def Z(): PlayerTile = new PlayerTile('Z', 10)
-  def BLANK(): PlayerTile = new PlayerTile(' ', 0)
+  def Blank(): PlayerTile = new PlayerTile(' ', 0)
+
+  def EmptyBoardTile(): BoardTile = new BoardTile(
+    None, Multiplier.NONE, new ListBuffer[PlayerTile], false)
 }
