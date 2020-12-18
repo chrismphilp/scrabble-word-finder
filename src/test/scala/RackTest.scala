@@ -1,3 +1,4 @@
+import TileUtilities._
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.must.Matchers.be
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
@@ -18,15 +19,45 @@ class RackTest extends AnyFunSuite {
 
   test("Should correctly find all valid initial words") {
     rack.fillRack(bag)
-    val buffer: mutable.HashSet[String] = TrieUtilities.findInitialWords(trie, rack.tiles)
+    val words: mutable.HashSet[String] = TrieUtilities.findInitialWords(trie, rack.tiles)
 
-    for (x <- buffer) assert(TrieUtilities.search(trie, x, 0) === true)
+    for (x <- words) assert(TrieUtilities.search(trie, x, 0) === true)
+  }
+
+  test("Should correctly find all valid initial words from pre-made set") {
+    rack.setRack(List(Z(), Z(), A(), A(), R(), R(), R()).to(ListBuffer))
+    val words: mutable.HashSet[String] = TrieUtilities.findInitialWords(trie, rack.tiles)
+
+    assert(words.size === 5)
+    for (x <- words) assert(TrieUtilities.search(trie, x, 0) === true)
   }
 
   test("Should find longest word") {
     rack.fillRack(bag)
     val longestWord: String = TrieUtilities.findLongestInitialWord(trie, rack.tiles)
 
+    assert(TrieUtilities.search(trie, longestWord, 0) === true)
+  }
+
+  test("Should find longest word (WART) from pre-made rack") {
+    rack.setRack(List(W(), A(), R(), T()).to(ListBuffer))
+    var longestWord: String = TrieUtilities.findLongestInitialWord(trie, rack.tiles)
+
+    assert(longestWord === "WART")
+    assert(TrieUtilities.search(trie, longestWord, 0) === true)
+
+    rack.setRack(List(R(), A(), T(), W()).to(ListBuffer))
+    longestWord = TrieUtilities.findLongestInitialWord(trie, rack.tiles)
+
+    assert(longestWord === "WART")
+    assert(TrieUtilities.search(trie, longestWord, 0) === true)
+  }
+
+  test("Should find longest word (SWAGGIE) from pre-made rack") {
+    rack.setRack(List(S(), E(), A(), G(), W(), I(), G()).to(ListBuffer))
+    val longestWord: String = TrieUtilities.findLongestInitialWord(trie, rack.tiles)
+
+    assert(longestWord === "SWAGGIE")
     assert(TrieUtilities.search(trie, longestWord, 0) === true)
   }
 
@@ -38,11 +69,19 @@ class RackTest extends AnyFunSuite {
     assert(highestScoringWord._2 > 0 === true)
   }
 
-  test("Should find longest and highest scoring word") {
-    rack.fillRack(bag)
-    val highestScoringWord: (String, Int) = TrieUtilities.findHighestScoringInitialWord(trie, rack.tiles)
+  test("Should find highest scoring word (WART) from pre-made set") {
+    rack.setRack(List(W(), A(), R(), T()).to(ListBuffer))
+    var highestScoringWord: (String, Int) = TrieUtilities.findHighestScoringInitialWord(trie, rack.tiles)
 
+    assert(highestScoringWord._1 === "WART")
     assert(TrieUtilities.search(trie, highestScoringWord._1, 0) === true)
-    assert(highestScoringWord._2 > 0 === true)
+    assert(highestScoringWord._2 === 7)
+
+    rack.setRack(List(R(), A(), T(), W()).to(ListBuffer))
+    highestScoringWord = TrieUtilities.findHighestScoringInitialWord(trie, rack.tiles)
+
+    assert(highestScoringWord._1 === "WART")
+    assert(TrieUtilities.search(trie, highestScoringWord._1, 0) === true)
+    assert(highestScoringWord._2 === 7)
   }
 }
