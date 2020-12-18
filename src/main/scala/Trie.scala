@@ -1,1 +1,2 @@
-class Trie(val value: Character, var isComplete: Boolean, var children: Array[Trie])
+class Trie(val value: Char, var isComplete: Boolean,
+           var completedWord: String, var children: Array[Trie])
