@@ -21,7 +21,28 @@ class RackTest extends AnyFunSuite {
     val buffer: mutable.HashSet[String] = TrieUtilities.findInitialWords(trie, rack.tiles)
 
     for (x <- buffer) assert(TrieUtilities.search(trie, x, 0) === true)
-    val sortedWords: List[String] = buffer.toList.sorted
-    sortedWords
+  }
+
+  test("Should find longest word") {
+    rack.fillRack(bag)
+    val longestWord: String = TrieUtilities.findLongestInitialWord(trie, rack.tiles)
+
+    assert(TrieUtilities.search(trie, longestWord, 0) === true)
+  }
+
+  test("Should find highest scoring word") {
+    rack.fillRack(bag)
+    val highestScoringWord: (String, Int) = TrieUtilities.findHighestScoringInitialWord(trie, rack.tiles)
+
+    assert(TrieUtilities.search(trie, highestScoringWord._1, 0) === true)
+    assert(highestScoringWord._2 > 0 === true)
+  }
+
+  test("Should find longest and highest scoring word") {
+    rack.fillRack(bag)
+    val highestScoringWord: (String, Int) = TrieUtilities.findHighestScoringInitialWord(trie, rack.tiles)
+
+    assert(TrieUtilities.search(trie, highestScoringWord._1, 0) === true)
+    assert(highestScoringWord._2 > 0 === true)
   }
 }

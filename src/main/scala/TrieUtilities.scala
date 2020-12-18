@@ -31,27 +31,103 @@ object TrieUtilities {
   def findInitialWords(trie: Trie, tiles: ListBuffer[Tile]): mutable.HashSet[String] = {
     val set: mutable.HashSet[String] = new mutable.HashSet[String]
 
-    findWord(trie, List.range(0, 7).to(ListBuffer))
+    findWords(trie, List.range(0, 7).to(ListBuffer))
 
-    def findWord(curr: Trie, list: ListBuffer[Int]): Unit = {
+    def findWords(curr: Trie, list: ListBuffer[Int]): Unit = {
       if (curr.isComplete) set += curr.completedWord
       for (x <- list.indices) {
         val tmpBuffer = list.clone()
         val tile: Tile = tiles(list(x))
+        tmpBuffer.remove(x)
 
         if (tile.score == 0) {
-          tmpBuffer.remove(x)
           for (y <- List.range(0, 26)) {
-            if (Option(curr.children(y)).nonEmpty) findWord(curr.children(y), tmpBuffer)
+            if (Option(curr.children(y)).nonEmpty) findWords(curr.children(y), tmpBuffer)
           }
         } else {
           if (Option(curr.children(tile.letter - 65)).nonEmpty) {
-            tmpBuffer.remove(x)
-            findWord(curr.children(tiles(list(x)).letter - 65), tmpBuffer)
+            findWords(curr.children(tile.letter - 65), tmpBuffer)
           }
         }
       }
     }
+
     set
+  }
+
+  def findLongestInitialWord(trie: Trie, tiles: ListBuffer[Tile]): String = {
+    var longestWord: String = new String
+
+    findLongestWord(trie, List.range(0, 7).to(ListBuffer))
+
+    def findLongestWord(curr: Trie, list: ListBuffer[Int]): Unit = {
+      if (curr.isComplete && curr.completedWord.length > longestWord.length) {
+        longestWord = curr.completedWord
+      }
+
+      if (longestWord.length < curr.completedWord.length + list.length) {
+        for (x <- list.indices) {
+          val tmpBuffer = list.clone()
+          val tile: Tile = tiles(list(x))
+          tmpBuffer.remove(x)
+
+          if (tile.score == 0) {
+            for (y <- List.range(0, 26)) {
+              if (Option(curr.children(y)).nonEmpty) findLongestWord(curr.children(y), tmpBuffer)
+            }
+          } else {
+            if (Option(curr.children(tile.letter - 65)).nonEmpty) {
+              findLongestWord(curr.children(tile.letter - 65), tmpBuffer)
+            }
+          }
+        }
+      }
+    }
+
+    longestWord
+  }
+
+  def findHighestScoringInitialWord(trie: Trie, tiles: ListBuffer[Tile]): (String, Int) = {
+    var highestScoringWord: String = "N/A"
+    var wordScore: Int = 0
+
+    findHighestScoringWord(trie, List.range(0, 7).to(ListBuffer), 0, tiles.map(_.score).sum)
+
+    def findHighestScoringWord(curr: Trie, list: ListBuffer[Int],
+                               currentScore: Int, remainingPoints: Int): Unit = {
+      if (curr.completedWord.length > 0 && currentScore > wordScore) {
+        highestScoringWord = curr.completedWord
+        wordScore = currentScore
+      }
+
+      if ((currentScore + remainingPoints) > wordScore) {
+        for (x <- list.indices) {
+          val tmpBuffer = list.clone()
+          val tile: Tile = tiles(list(x))
+          tmpBuffer.remove(x)
+
+          if (tile.score == 0) {
+            for (y <- List.range(0, 26)) {
+              if (Option(curr.children(y)).nonEmpty) {
+                findHighestScoringWord(curr.children(y), tmpBuffer,
+                  if (tmpBuffer.nonEmpty) currentScore else currentScore + 50, remainingPoints)
+              }
+            }
+          } else {
+            if (Option(curr.children(tile.letter - 65)).nonEmpty) {
+              val newScore: Int = currentScore + tile.score
+              findHighestScoringWord(
+                curr.children(tile.letter - 65),
+                tmpBuffer,
+                if (tmpBuffer.nonEmpty) newScore else newScore + 50,
+                remainingPoints - tile.score
+              )
+            }
+          }
+        }
+      }
+    }
+
+    (highestScoringWord, wordScore)
   }
 }
