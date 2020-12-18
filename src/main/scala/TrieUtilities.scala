@@ -28,7 +28,7 @@ object TrieUtilities {
     }
   }
 
-  def findInitialWords(trie: Trie, tiles: ListBuffer[Tile]): mutable.HashSet[String] = {
+  def findInitialWords(trie: Trie, tiles: ListBuffer[PlayerTile]): mutable.HashSet[String] = {
     val set: mutable.HashSet[String] = new mutable.HashSet[String]
 
     findWords(trie, List.range(0, tiles.length).to(ListBuffer))
@@ -37,7 +37,7 @@ object TrieUtilities {
       if (curr.isComplete) set += curr.completedWord
       for (x <- list.indices) {
         val tmpBuffer = list.clone()
-        val tile: Tile = tiles(list(x))
+        val tile: PlayerTile = tiles(list(x))
         tmpBuffer.remove(x)
 
         if (tile.score == 0) {
@@ -55,7 +55,7 @@ object TrieUtilities {
     set
   }
 
-  def findLongestInitialWord(trie: Trie, tiles: ListBuffer[Tile]): String = {
+  def findLongestInitialWord(trie: Trie, tiles: ListBuffer[PlayerTile]): String = {
     var longestWord: String = new String
 
     findLongestWord(trie, List.range(0, tiles.length).to(ListBuffer), 0)
@@ -68,7 +68,7 @@ object TrieUtilities {
       if (longestWord.length < (step + list.length)) {
         for (x <- list.indices) {
           val tmpBuffer = list.clone()
-          val tile: Tile = tiles(list(x))
+          val tile: PlayerTile = tiles(list(x))
           tmpBuffer.remove(x)
 
           if (tile.score == 0) {
@@ -89,7 +89,7 @@ object TrieUtilities {
     longestWord
   }
 
-  def findHighestScoringInitialWord(trie: Trie, tiles: ListBuffer[Tile]): (String, Int) = {
+  def findHighestScoringInitialWord(trie: Trie, tiles: ListBuffer[PlayerTile]): (String, Int) = {
     var highestScoringWord: String = "N/A"
     var wordScore: Int = 0
 
@@ -110,7 +110,7 @@ object TrieUtilities {
       if ((currentScore + remainingPoints) > wordScore) {
         for (x <- list.indices) {
           val tmpBuffer = list.clone()
-          val tile: Tile = tiles(list(x))
+          val tile: PlayerTile = tiles(list(x))
           tmpBuffer.remove(x)
 
           if (tile.score == 0) {

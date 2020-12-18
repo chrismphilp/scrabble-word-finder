@@ -1,1 +1,3 @@
-class Board(setup: List[List[Tile]])
+class Board() {
+
+}
