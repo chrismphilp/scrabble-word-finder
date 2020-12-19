@@ -1,3 +1,4 @@
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 object TileUtilities {
@@ -62,5 +63,7 @@ object TileUtilities {
   def Blank(): PlayerTile = new PlayerTile(' ', 0)
 
   def EmptyBoardTile(): BoardTile = new BoardTile(
-    None, Multiplier.NONE, new ListBuffer[PlayerTile], false)
+    None, Multiplier.NONE, new mutable.HashSet[Char], false, false,
+    new mutable.HashSet[Char], false, false, false
+  )
 }
