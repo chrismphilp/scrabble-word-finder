@@ -5,16 +5,17 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
   def updateBoard(): Unit = {
     for (x <- boardTiles.indices) {
       for (y <- boardTiles(x).indices) {
-        updateTile(x, y)
+        updateAnchorTile(x, y)
+        updateCrossCheckTile(x, y)
       }
     }
   }
 
-  def updateTile(x: Int, y: Int): Unit = {
+  def updateAnchorTile(x: Int, y: Int): Unit = {
     val boardTile: BoardTile = boardTiles(x)(y)
 
     if (boardTile.tile.isEmpty) {
-      boardTile.requiresAboveCrossCheck = isAboveCrossCheckRequired(x, y)
+      boardTiles(x)(y).requiresAboveCrossCheck = isAboveCrossCheckRequired(x, y)
       boardTile.requiresBelowCrossCheck = isBelowCrossCheckRequired(x, y)
       boardTile.requiresRightCrossCheck = isRightCrossCheckRequired(x, y)
       boardTile.requiresLeftCrossCheck = isLeftCrossCheckRequired(x, y)
@@ -27,7 +28,6 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
       boardTile.requiresRightCrossCheck = false
       boardTile.requiresLeftCrossCheck = false
     }
-    updateCrossCheckTile(x, y)
   }
 
   def isAboveCrossCheckRequired(x: Int, y: Int): Boolean = {
@@ -66,25 +66,40 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
   def updateHorizontalCrossChecks(x: Int, y: Int): Unit = {
 
-    var curr = y
+    var startingPoint = y
+    var startingTrie: Trie = trie
 
     // Need to get Trie to correct point
     if (boardTiles(x)(y).requiresLeftCrossCheck) {
-      while (curr > 0 && boardTiles(x)(curr).tile.nonEmpty) curr -= 1
-      if (boardTiles(x)(curr).tile.isEmpty) curr += 1
+      startingPoint -= 1
+      while (startingPoint > 0 && boardTiles(x)(startingPoint).tile.nonEmpty) startingPoint -= 1
+      if (boardTiles(x)(startingPoint).tile.isEmpty) startingPoint += 1
+
+      while (startingPoint != y) {
+        startingTrie = startingTrie.children(boardTiles(x)(startingPoint).tile.get.letter - 65)
+        startingPoint += 1
+      }
+    } else {
+      startingPoint += 1
     }
 
     for (i <- 0 until 26) {
-      val tmpTrie: Trie = trie.children(i)
-      curr = y + 1
-      while (curr < boardTiles.length &&
-        boardTiles(x)(curr).tile.nonEmpty &&
-        Option(tmpTrie.children(boardTiles(x)(curr).tile.get.letter - 65)).nonEmpty) {
-        curr += 1
-      }
+      var tmpTrie = startingTrie.children(i)
 
-      if (tmpTrie.isComplete) {
-        boardTiles(curr)(y).horizontalCrossChecks += (i + 65).toChar
+      if (tmpTrie != null) {
+        var curr = startingPoint
+
+        while (curr < boardTiles.length &&
+          boardTiles(x)(curr).tile.nonEmpty &&
+          Option(tmpTrie.children(boardTiles(x)(curr).tile.get.letter - 65)).nonEmpty) {
+          tmpTrie = tmpTrie.children(boardTiles(x)(curr).tile.get.letter - 65)
+          curr += 1
+        }
+
+        if ((curr == boardTiles.length || boardTiles(x)(curr).tile.isEmpty) && tmpTrie.isComplete) {
+          val char: Char = (i + 65).toChar
+          boardTiles(x)(y).horizontalCrossChecks += char
+        }
       }
     }
   }
