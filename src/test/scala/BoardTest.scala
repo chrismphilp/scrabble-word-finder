@@ -113,7 +113,7 @@ class BoardTest extends AnyFunSuite {
     assert(board.boardTiles(4)(4).isAnchor === false)
   }
 
-  test("Should correctly update Cross-Check tiles with single word") {
+  test("Should correctly update Cross-Check tiles with single horizontal word") {
     val board: Board = new Board(Array(
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
@@ -156,5 +156,79 @@ class BoardTest extends AnyFunSuite {
     assert(board.boardTiles(2)(2).horizontalCrossChecks.size === 0)
     assert(board.boardTiles(2)(3).horizontalCrossChecks.size === 0)
     assert(board.boardTiles(2)(4).horizontalCrossChecks.size === 4)
+  }
+
+  test("Should correctly update Cross-Check tiles with multiple separated horizontal words") {
+    val board: Board = new Board(Array(
+      Array(
+        new BoardTile(Option(G()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false,false),
+        new BoardTile(Option(R()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false,false),
+        new BoardTile(Option(A()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false, false),
+        new BoardTile(Option(D()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false,false),
+        new BoardTile(Option(E()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false,false)
+      ),
+      Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
+      Array(
+        EmptyBoardTile(),
+        new BoardTile(Option(A()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false,false),
+        new BoardTile(Option(P()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false, false),
+        new BoardTile(Option(E()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false,false),
+        EmptyBoardTile()
+      ),
+      Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
+      Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile())
+    ), trie)
+
+    board.updateBoard()
+
+    // Should have no verticalCrossChecks && horizontalCrossChecks for filled words
+    assert(board.boardTiles(0)(0).verticalCrossChecks.size === 0 &&
+      board.boardTiles(0)(0).horizontalCrossChecks.size === 0)
+    assert(board.boardTiles(0)(1).verticalCrossChecks.size === 0 &&
+      board.boardTiles(0)(1).horizontalCrossChecks.size === 0)
+    assert(board.boardTiles(0)(2).verticalCrossChecks.size === 0 &&
+      board.boardTiles(0)(2).horizontalCrossChecks.size === 0)
+    assert(board.boardTiles(0)(3).verticalCrossChecks.size === 0 &&
+      board.boardTiles(0)(3).horizontalCrossChecks.size === 0)
+    assert(board.boardTiles(0)(4).verticalCrossChecks.size === 0 &&
+      board.boardTiles(0)(4).horizontalCrossChecks.size === 0)
+
+    assert(board.boardTiles(2)(1).verticalCrossChecks.size === 0 &&
+      board.boardTiles(2)(1).horizontalCrossChecks.size === 0)
+    assert(board.boardTiles(2)(2).verticalCrossChecks.size === 0 &&
+      board.boardTiles(2)(2).horizontalCrossChecks.size === 0)
+    assert(board.boardTiles(2)(3).verticalCrossChecks.size === 0 &&
+      board.boardTiles(2)(3).horizontalCrossChecks.size === 0)
+
+    // Should have correct horizontalCrossChecks
+    assert(board.boardTiles(2)(0).horizontalCrossChecks.size === 8)
+    assert(board.boardTiles(2)(4).horizontalCrossChecks.size === 4)
+
+    // Should have correct verticalCrossChecks
+    assert(board.boardTiles(1)(0).verticalCrossChecks.size === 3)
+    assert(board.boardTiles(1)(1).verticalCrossChecks.size === 2)
+    assert(board.boardTiles(1)(2).verticalCrossChecks.size === 4)
+    assert(board.boardTiles(1)(3).verticalCrossChecks.size === 6)
+    assert(board.boardTiles(1)(4).verticalCrossChecks.size === 13)
+
+    assert(board.boardTiles(3)(1).verticalCrossChecks.size === 16)
+    assert(board.boardTiles(3)(2).verticalCrossChecks.size === 4)
+    assert(board.boardTiles(3)(3).verticalCrossChecks.size === 13)
   }
 }

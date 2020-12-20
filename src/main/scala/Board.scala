@@ -80,9 +80,8 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
         startingTrie = startingTrie.children(boardTiles(x)(startingPoint).tile.get.letter - 65)
         startingPoint += 1
       }
-    } else {
-      startingPoint += 1
     }
+    startingPoint += 1
 
     for (i <- 0 until 26) {
       var tmpTrie = startingTrie.children(i)
@@ -120,9 +119,8 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
         startingTrie = startingTrie.children(boardTiles(startingPoint)(y).tile.get.letter - 65)
         startingPoint += 1
       }
-    } else {
-      startingPoint += 1
     }
+    startingPoint += 1
 
     for (i <- 0 until 26) {
       var tmpTrie = startingTrie.children(i)
