@@ -54,6 +54,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
     val boardTile: BoardTile = boardTiles(x)(y)
     if (boardTile.isAnchor) {
       if (boardTile.requiresAboveCrossCheck || boardTile.requiresBelowCrossCheck) {
+        updateVerticalCrossChecks(x, y)
       }
       if (boardTile.requiresRightCrossCheck || boardTile.requiresLeftCrossCheck) {
         updateHorizontalCrossChecks(x, y)
@@ -99,6 +100,46 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
         if ((curr == boardTiles.length || boardTiles(x)(curr).tile.isEmpty) && tmpTrie.isComplete) {
           val char: Char = (i + 65).toChar
           boardTiles(x)(y).horizontalCrossChecks += char
+        }
+      }
+    }
+  }
+
+  def updateVerticalCrossChecks(x: Int, y: Int): Unit = {
+
+    var startingPoint = x
+    var startingTrie: Trie = trie
+
+    // Need to get Trie to correct point
+    if (boardTiles(x)(y).requiresAboveCrossCheck) {
+      startingPoint -= 1
+      while (startingPoint > 0 && boardTiles(startingPoint)(y).tile.nonEmpty) startingPoint -= 1
+      if (boardTiles(startingPoint)(y).tile.isEmpty) startingPoint += 1
+
+      while (startingPoint != x) {
+        startingTrie = startingTrie.children(boardTiles(startingPoint)(y).tile.get.letter - 65)
+        startingPoint += 1
+      }
+    } else {
+      startingPoint += 1
+    }
+
+    for (i <- 0 until 26) {
+      var tmpTrie = startingTrie.children(i)
+
+      if (tmpTrie != null) {
+        var curr = startingPoint
+
+        while (curr < boardTiles.length &&
+          boardTiles(curr)(y).tile.nonEmpty &&
+          Option(tmpTrie.children(boardTiles(curr)(y).tile.get.letter - 65)).nonEmpty) {
+          tmpTrie = tmpTrie.children(boardTiles(curr)(y).tile.get.letter - 65)
+          curr += 1
+        }
+
+        if ((curr == boardTiles.length || boardTiles(curr)(y).tile.isEmpty) && tmpTrie.isComplete) {
+          val char: Char = (i + 65).toChar
+          boardTiles(x)(y).verticalCrossChecks += char
         }
       }
     }
