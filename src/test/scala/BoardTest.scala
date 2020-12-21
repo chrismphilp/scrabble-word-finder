@@ -1,4 +1,4 @@
-import TileUtilities.{A, C, D, E, EmptyBoardTile, G, H, P, R, S}
+import TileUtilities._
 import org.scalatest.funsuite.AnyFunSuite
 
 import scala.collection.mutable
@@ -14,13 +14,13 @@ class BoardTest extends AnyFunSuite {
         EmptyBoardTile(),
         new BoardTile(Option(A()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         new BoardTile(Option(P()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
           false, false),
         new BoardTile(Option(E()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         EmptyBoardTile()
       ),
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
@@ -48,32 +48,32 @@ class BoardTest extends AnyFunSuite {
       Array(
         new BoardTile(Option(G()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         new BoardTile(Option(R()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         new BoardTile(Option(A()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
           false, false),
         new BoardTile(Option(D()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         new BoardTile(Option(E()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false)
+          false, false)
       ),
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
       Array(
         EmptyBoardTile(),
         new BoardTile(Option(A()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         new BoardTile(Option(P()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
           false, false),
         new BoardTile(Option(E()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         EmptyBoardTile()
       ),
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
@@ -121,13 +121,13 @@ class BoardTest extends AnyFunSuite {
         EmptyBoardTile(),
         new BoardTile(Option(A()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         new BoardTile(Option(P()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
           false, false),
         new BoardTile(Option(E()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         EmptyBoardTile()
       ),
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
@@ -163,32 +163,32 @@ class BoardTest extends AnyFunSuite {
       Array(
         new BoardTile(Option(G()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         new BoardTile(Option(R()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         new BoardTile(Option(A()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
           false, false),
         new BoardTile(Option(D()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         new BoardTile(Option(E()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false)
+          false, false)
       ),
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
       Array(
         EmptyBoardTile(),
         new BoardTile(Option(A()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         new BoardTile(Option(P()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
           false, false),
         new BoardTile(Option(E()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         EmptyBoardTile()
       ),
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
@@ -242,7 +242,7 @@ class BoardTest extends AnyFunSuite {
         EmptyBoardTile(),
         new BoardTile(Option(H()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false)
+          false, false)
       ),
       Array(
         EmptyBoardTile(),
@@ -302,7 +302,7 @@ class BoardTest extends AnyFunSuite {
         EmptyBoardTile(),
         new BoardTile(Option(C()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         EmptyBoardTile(),
         EmptyBoardTile()
       ),
@@ -311,18 +311,18 @@ class BoardTest extends AnyFunSuite {
         EmptyBoardTile(),
         new BoardTile(Option(A()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         EmptyBoardTile(),
         new BoardTile(Option(H()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false)
+          false, false)
       ),
       Array(
         EmptyBoardTile(),
         EmptyBoardTile(),
         new BoardTile(Option(S()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         EmptyBoardTile(),
         new BoardTile(Option(E()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
@@ -333,7 +333,7 @@ class BoardTest extends AnyFunSuite {
         EmptyBoardTile(),
         new BoardTile(Option(H()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
-          false,false),
+          false, false),
         EmptyBoardTile(),
         new BoardTile(Option(A()), Multiplier.NONE, new mutable.HashSet[Char], false,
           false, new mutable.HashSet[Char], false,
@@ -376,8 +376,111 @@ class BoardTest extends AnyFunSuite {
     assert(board.boardTiles(4)(2).verticalCrossChecks.size === 0)
 
     // Should have correct horizontalCrossChecks
+    assert(board.boardTiles(0)(1).horizontalCrossChecks.size === 0)
     assert(board.boardTiles(0)(3).horizontalCrossChecks.size === 1)
     assert(board.boardTiles(1)(3).horizontalCrossChecks.size === 3)
+    assert(board.boardTiles(2)(3).horizontalCrossChecks.size === 5)
+    assert(board.boardTiles(3)(3).horizontalCrossChecks.size === 1)
+    assert(board.boardTiles(4)(3).horizontalCrossChecks.size === 2)
+  }
+
+  test("Should correctly update Cross-Check tiles with horizontal and vertical words") {
+    val board: Board = new Board(Array(
+      Array(
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        new BoardTile(Option(C()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false, false),
+        EmptyBoardTile(),
+        EmptyBoardTile()
+      ),
+      Array(
+        EmptyBoardTile(),
+        new BoardTile(Option(B()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false, false),
+        new BoardTile(Option(A()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false, false),
+        new BoardTile(Option(T()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false, false),
+        new BoardTile(Option(H()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false, false)
+      ),
+      Array(
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        new BoardTile(Option(S()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false, false),
+        EmptyBoardTile(),
+        new BoardTile(Option(E()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false, false)
+      ),
+      Array(
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        new BoardTile(Option(H()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false, false),
+        EmptyBoardTile(),
+        new BoardTile(Option(A()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false, false)
+      ),
+      Array(
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        new BoardTile(Option(P()), Multiplier.NONE, new mutable.HashSet[Char], false,
+          false, new mutable.HashSet[Char], false,
+          false, false)
+      )
+    ), trie)
+
+    board.updateBoard()
+
+    // Should have no verticalCrossChecks && horizontalCrossChecks for filled words
+    assert(board.boardTiles(0)(2).verticalCrossChecks.size === 0 &&
+      board.boardTiles(0)(2).horizontalCrossChecks.size === 0)
+    assert(board.boardTiles(1)(2).verticalCrossChecks.size === 0 &&
+      board.boardTiles(1)(2).horizontalCrossChecks.size === 0)
+    assert(board.boardTiles(2)(2).verticalCrossChecks.size === 0 &&
+      board.boardTiles(2)(2).horizontalCrossChecks.size === 0)
+    assert(board.boardTiles(3)(2).verticalCrossChecks.size === 0 &&
+      board.boardTiles(3)(2).horizontalCrossChecks.size === 0)
+
+    assert(board.boardTiles(1)(4).verticalCrossChecks.size === 0 &&
+      board.boardTiles(1)(4).horizontalCrossChecks.size === 0)
+    assert(board.boardTiles(2)(4).verticalCrossChecks.size === 0 &&
+      board.boardTiles(2)(4).horizontalCrossChecks.size === 0)
+    assert(board.boardTiles(3)(4).verticalCrossChecks.size === 0 &&
+      board.boardTiles(3)(4).horizontalCrossChecks.size === 0)
+    assert(board.boardTiles(4)(4).verticalCrossChecks.size === 0 &&
+      board.boardTiles(4)(4).horizontalCrossChecks.size === 0)
+
+    assert(board.boardTiles(1)(1).verticalCrossChecks.size === 0 &&
+      board.boardTiles(1)(1).horizontalCrossChecks.size === 0)
+    assert(board.boardTiles(1)(3).verticalCrossChecks.size === 0 &&
+      board.boardTiles(1)(3).horizontalCrossChecks.size === 0)
+
+    // Should have correct verticalCrossChecks ABOVE word
+    assert(board.boardTiles(0)(1).verticalCrossChecks.size === 2)
+    assert(board.boardTiles(0)(3).verticalCrossChecks.size === 5)
+    assert(board.boardTiles(0)(4).verticalCrossChecks.size === 2)
+    assert(board.boardTiles(2)(1).verticalCrossChecks.size === 5)
+    assert(board.boardTiles(2)(3).verticalCrossChecks.size === 4)
+    assert(board.boardTiles(4)(2).verticalCrossChecks.size === 0)
+
+    // Should have correct horizontalCrossChecks
+    assert(board.boardTiles(0)(1).horizontalCrossChecks.size === 0)
+    assert(board.boardTiles(0)(3).horizontalCrossChecks.size === 1)
+    assert(board.boardTiles(2)(1).horizontalCrossChecks.size === 5)
     assert(board.boardTiles(2)(3).horizontalCrossChecks.size === 5)
     assert(board.boardTiles(3)(3).horizontalCrossChecks.size === 1)
     assert(board.boardTiles(4)(3).horizontalCrossChecks.size === 2)
