@@ -63,7 +63,8 @@ object TileUtilities {
   def Blank(): PlayerTile = new PlayerTile(' ', 0)
 
   def EmptyBoardTile(): BoardTile = new BoardTile(
-    None, Multiplier.NONE, new mutable.HashSet[Char], false, false,
-    new mutable.HashSet[Char], false, false, false
+    None, Multiplier.NONE, new mutable.HashMap[Char, Int], false, false,
+    new mutable.HashMap[Char, Int], false,
+    false, false
   )
 }

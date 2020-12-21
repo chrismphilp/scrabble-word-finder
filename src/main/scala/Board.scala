@@ -1,5 +1,4 @@
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 
 class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
@@ -61,14 +60,15 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
         updateHorizontalCrossChecks(x, y)
       }
     } else {
-      boardTile.horizontalCrossChecks = new mutable.HashSet[Char]
-      boardTile.verticalCrossChecks = new mutable.HashSet[Char]
+      boardTile.horizontalCrossChecks = new mutable.HashMap[Char, Int]
+      boardTile.verticalCrossChecks = new mutable.HashMap[Char, Int]
     }
   }
 
   def updateHorizontalCrossChecks(x: Int, y: Int): Unit = {
 
     var startingPoint = y
+    var crossSumPoints = 0
     var startingTrie: Trie = trie
 
     // Need to get Trie to correct point
@@ -99,7 +99,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
         if ((curr == boardTiles.length || boardTiles(x)(curr).tile.isEmpty) && tmpTrie.isComplete) {
           val char: Char = (i + 65).toChar
-          boardTiles(x)(y).horizontalCrossChecks += char
+          boardTiles(x)(y).horizontalCrossChecks += char -> crossSumPoints
         }
       }
     }
@@ -108,6 +108,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
   def updateVerticalCrossChecks(x: Int, y: Int): Unit = {
 
     var startingPoint = x
+    var crossSumPoints = 0
     var startingTrie: Trie = trie
 
     // Need to get Trie to correct point
@@ -138,7 +139,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
         if ((curr == boardTiles.length || boardTiles(curr)(y).tile.isEmpty) && tmpTrie.isComplete) {
           val char: Char = (i + 65).toChar
-          boardTiles(x)(y).verticalCrossChecks += char
+          boardTiles(x)(y).verticalCrossChecks += char -> crossSumPoints
         }
       }
     }
