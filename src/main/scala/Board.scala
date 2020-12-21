@@ -1,4 +1,5 @@
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
