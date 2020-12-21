@@ -1,7 +1,36 @@
-import scala.collection.mutable
+import scala.collection.{immutable, mutable}
 import scala.collection.mutable.ListBuffer
 
 object TileUtilities {
+  var tileScoreMappings: immutable.HashMap[Char, Int] = immutable.HashMap(
+    'A' -> 1,
+    'B' -> 3,
+    'C' -> 3,
+    'D' -> 2,
+    'E' -> 1,
+    'F' -> 4,
+    'G' -> 2,
+    'H' -> 4,
+    'I' -> 1,
+    'J' -> 8,
+    'K' -> 5,
+    'L' -> 1,
+    'M' -> 3,
+    'N' -> 1,
+    'O' -> 1,
+    'P' -> 3,
+    'Q' -> 10,
+    'R' -> 1,
+    'S' -> 1,
+    'T' -> 1,
+    'U' -> 1,
+    'V' -> 4,
+    'W' -> 4,
+    'X' -> 8,
+    'Y' -> 4,
+    'Z' -> 10
+  )
+
   def createInitialBag(): Bag = {
     val buffer: ListBuffer[PlayerTile] = new ListBuffer[PlayerTile]
     for (_ <- 0 until 9) buffer += A()
@@ -61,6 +90,8 @@ object TileUtilities {
   def Y(): PlayerTile = new PlayerTile('Y', 4)
   def Z(): PlayerTile = new PlayerTile('Z', 10)
   def Blank(): PlayerTile = new PlayerTile(' ', 0)
+
+  def getTileScore(c: Char): Int = tileScoreMappings.getOrElse(c, 0)
 
   def EmptyBoardTile(): BoardTile = new BoardTile(
     None, Multiplier.NONE, new mutable.HashMap[Char, Int], false, false,

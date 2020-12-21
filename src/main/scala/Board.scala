@@ -68,7 +68,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
   def updateHorizontalCrossChecks(x: Int, y: Int): Unit = {
 
     var startingPoint = y
-    var crossSumPoints = 0
+    var startingCrossSumPoints = 0
     var startingTrie: Trie = trie
 
     // Need to get Trie to correct point
@@ -79,6 +79,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
       while (startingPoint != y) {
         startingTrie = startingTrie.children(boardTiles(x)(startingPoint).tile.get.letter - 65)
+        startingCrossSumPoints += TileUtilities.getTileScore(boardTiles(x)(startingPoint).tile.get.letter)
         startingPoint += 1
       }
     }
@@ -89,17 +90,20 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
       if (tmpTrie != null) {
         var curr = startingPoint
+        var currPoints = startingCrossSumPoints
+        currPoints += TileUtilities.getTileScore(tmpTrie.value)
 
         while (curr < boardTiles.length &&
           boardTiles(x)(curr).tile.nonEmpty &&
           Option(tmpTrie.children(boardTiles(x)(curr).tile.get.letter - 65)).nonEmpty) {
           tmpTrie = tmpTrie.children(boardTiles(x)(curr).tile.get.letter - 65)
+          currPoints += TileUtilities.getTileScore(boardTiles(x)(curr).tile.get.letter)
           curr += 1
         }
 
         if ((curr == boardTiles.length || boardTiles(x)(curr).tile.isEmpty) && tmpTrie.isComplete) {
           val char: Char = (i + 65).toChar
-          boardTiles(x)(y).horizontalCrossChecks += char -> crossSumPoints
+          boardTiles(x)(y).horizontalCrossChecks += char -> currPoints
         }
       }
     }
@@ -108,7 +112,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
   def updateVerticalCrossChecks(x: Int, y: Int): Unit = {
 
     var startingPoint = x
-    var crossSumPoints = 0
+    var startingCrossSumPoints = 0
     var startingTrie: Trie = trie
 
     // Need to get Trie to correct point
@@ -119,6 +123,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
       while (startingPoint != x) {
         startingTrie = startingTrie.children(boardTiles(startingPoint)(y).tile.get.letter - 65)
+        startingCrossSumPoints += TileUtilities.getTileScore(boardTiles(startingPoint)(y).tile.get.letter)
         startingPoint += 1
       }
     }
@@ -129,17 +134,20 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
       if (tmpTrie != null) {
         var curr = startingPoint
+        var currPoints = startingCrossSumPoints
+        currPoints += TileUtilities.getTileScore(tmpTrie.value)
 
         while (curr < boardTiles.length &&
           boardTiles(curr)(y).tile.nonEmpty &&
           Option(tmpTrie.children(boardTiles(curr)(y).tile.get.letter - 65)).nonEmpty) {
           tmpTrie = tmpTrie.children(boardTiles(curr)(y).tile.get.letter - 65)
+          currPoints += TileUtilities.getTileScore(boardTiles(curr)(y).tile.get.letter)
           curr += 1
         }
 
         if ((curr == boardTiles.length || boardTiles(curr)(y).tile.isEmpty) && tmpTrie.isComplete) {
           val char: Char = (i + 65).toChar
-          boardTiles(x)(y).verticalCrossChecks += char -> crossSumPoints
+          boardTiles(x)(y).verticalCrossChecks += char -> currPoints
         }
       }
     }
