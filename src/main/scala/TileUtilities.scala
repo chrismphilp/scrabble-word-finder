@@ -98,4 +98,28 @@ object TileUtilities {
     new mutable.HashMap[Char, Int], false,
     false, false
   )
+
+  def DoubleLetterTile(): BoardTile = new BoardTile(
+    None, Multiplier.DOUBLE_LETTER, new mutable.HashMap[Char, Int], false, false,
+    new mutable.HashMap[Char, Int], false,
+    false, false
+  )
+
+  def TripleLetterTile(): BoardTile = new BoardTile(
+    None, Multiplier.TRIPLE_LETTER, new mutable.HashMap[Char, Int], false, false,
+    new mutable.HashMap[Char, Int], false,
+    false, false
+  )
+
+  def DoubleWordTile(): BoardTile = new BoardTile(
+    None, Multiplier.DOUBLE_WORD, new mutable.HashMap[Char, Int], false, false,
+    new mutable.HashMap[Char, Int], false,
+    false, false
+  )
+
+  def TripleWordTile(): BoardTile = new BoardTile(
+    None, Multiplier.TRIPLE_WORD, new mutable.HashMap[Char, Int], false, false,
+    new mutable.HashMap[Char, Int], false,
+    false, false
+  )
 }

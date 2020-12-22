@@ -23,45 +23,76 @@ class Game(board: Board, trie: Trie, rack: Rack) {
     for (x <- board.boardTiles.indices) {
       for (y <- board.boardTiles(x).indices) {
         val boardTile: BoardTile = board.boardTiles(x)(y)
+        var wordPoints: Int = 0
 
         if (boardTile.isAnchor) {
           if (boardTile.requiresLeftCrossCheck && boardTile.horizontalCrossChecks.nonEmpty) {
-            extendRight(x, y, rack.tiles, trie)
+            var startingPoint = y
+            var startingTrie = trie
+
+            while (startingPoint > 0 && !board.boardTiles(startingPoint)(y).isAnchor) {
+              startingPoint -= 1
+            }
+            while (startingPoint != x) {
+              startingTrie = startingTrie.children(board.boardTiles(startingPoint)(y).tile.get.letter - 65)
+              wordPoints += TileUtilities.getTileScore(board.boardTiles(startingPoint)(y).tile.get.letter)
+              startingPoint += 1
+            }
+            extendRight(x, y, x, y, rack.tiles, startingTrie, wordPoints)
           } else {
-            extendLeft(x, y, rack.tiles, 0, trie)
+            var startingLimit = y
+            while (startingLimit > 0 && !board.boardTiles(startingLimit - 1)(y).isAnchor) {
+              startingLimit -= 1
+            }
+            extendLeft(x, y, x, y, rack.tiles, startingLimit, trie, 0)
           }
         }
       }
     }
 
     @tailrec
-    def extendLeft(x: Int, y: Int, letters: ListBuffer[PlayerTile], limit: Int, currTrie: Trie): Unit = {
+    def extendLeft(initX: Int, initY: Int, currX: Int, currY: Int, letters: ListBuffer[PlayerTile],
+                   limit: Int, currTrie: Trie, currPoints: Int): Unit = {
 
+      extendRight(initX, initY, currX, currY, letters, currTrie, currPoints)
       if (limit > 0) {
-        if (board.boardTiles(x)(y).tile.nonEmpty) {
-          extendLeft(x, y - 1, letters, limit - 1, currTrie)
+        if (board.boardTiles(currX)(currY).tile.nonEmpty) {
+          extendLeft(initX, initY, currX, currY - 1, letters, limit - 1, currTrie, currPoints)
         } else {
 
         }
       }
     }
 
-    @tailrec
-    def extendRight(x: Int, y: Int, letters: ListBuffer[PlayerTile], currTrie: Trie): Unit = {
-      val boardTile: BoardTile = board.boardTiles(x)(y)
+    def extendRight(initX: Int, initY: Int, currX: Int, currY: Int, letters: ListBuffer[PlayerTile],
+                    currTrie: Trie, currPoints: Int): Unit = {
+
+      val boardTile: BoardTile = board.boardTiles(currX)(currY)
+
+      if (trie.isComplete && currPoints > highestScoringWord._3) {
+        highestScoringWord = (trie.completedWord, initX, initY, currPoints, Direction.HORIZONTAL)
+      }
 
       if (boardTile.tile.isEmpty) {
-        if (trie.isComplete)
-        extendRight(x, y + 1, letters, currTrie)
+        for (tileIndex <- letters.indices) {
+          if (boardTile.verticalCrossChecks.contains(letters(tileIndex).letter) &&
+            Option(currTrie.children(board.boardTiles(currX)(currY).tile.get.letter - 65)).nonEmpty) {
+            val newTrie: Trie = currTrie.children(board.boardTiles(currX)(currY).tile.get.letter - 65)
+            val newLetters = letters.clone()
+            newLetters.remove(tileIndex)
+            extendRight(initX, initY, currX, currY, newLetters, newTrie, currPoints)
+          }
+        }
+        extendRight(initX, initY, currX, currY + 1, letters, currTrie, currPoints)
       } else {
-
+        if (Option(currTrie.children(board.boardTiles(currX)(currY).tile.get.letter - 65)).nonEmpty) {
+          val newTrie: Trie = currTrie.children(board.boardTiles(currX)(currY).tile.get.letter - 65)
+          val tileScore: Int = TileUtilities.getTileScore(board.boardTiles(currX)(currY).tile.get.letter)
+          extendRight(initX, initY, currX, currY + 1, letters, newTrie, currPoints + tileScore)
+        }
       }
     }
 
     highestScoringWord
-  }
-
-  def findWordPointValue(): Unit = {
-
   }
 }

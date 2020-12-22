@@ -73,10 +73,9 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
     // Need to get Trie to correct point
     if (boardTiles(x)(y).requiresLeftCrossCheck) {
-      startingPoint -= 1
-      while (startingPoint > 0 && boardTiles(x)(startingPoint).tile.nonEmpty) startingPoint -= 1
-      if (boardTiles(x)(startingPoint).tile.isEmpty) startingPoint += 1
-
+      while (startingPoint > 0 && boardTiles(x)(startingPoint - 1).tile.nonEmpty){
+        startingPoint -= 1
+      }
       while (startingPoint != y) {
         startingTrie = startingTrie.children(boardTiles(x)(startingPoint).tile.get.letter - 65)
         startingCrossSumPoints += TileUtilities.getTileScore(boardTiles(x)(startingPoint).tile.get.letter)
@@ -117,9 +116,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
     // Need to get Trie to correct point
     if (boardTiles(x)(y).requiresAboveCrossCheck) {
-      startingPoint -= 1
-      while (startingPoint > 0 && boardTiles(startingPoint)(y).tile.nonEmpty) startingPoint -= 1
-      if (boardTiles(startingPoint)(y).tile.isEmpty) startingPoint += 1
+      while (startingPoint > 0 && boardTiles(startingPoint - 1)(y).tile.nonEmpty) startingPoint -= 1
 
       while (startingPoint != x) {
         startingTrie = startingTrie.children(boardTiles(startingPoint)(y).tile.get.letter - 65)
