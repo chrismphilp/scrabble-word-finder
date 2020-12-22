@@ -21,7 +21,7 @@ class Game(board: Board, trie: Trie, rack: Rack) {
   def updateBoard(): Unit = board.updateBoard()
 
   def findHighestScoringWord(): HighestScoringWord = {
-    var highestScoringWord: HighestScoringWord =
+    val highestScoringWord: HighestScoringWord =
       new HighestScoringWord("", 0, 0, 0, Direction.HORIZONTAL)
 
     for (x <- board.boardTiles.indices) {
@@ -35,19 +35,21 @@ class Game(board: Board, trie: Trie, rack: Rack) {
             var startingPoint = y
             var startingTrie = trie
 
-            while (startingPoint > 0 && !board.boardTiles(startingPoint)(y).isAnchor) {
+            while (startingPoint > 0 && !board.boardTiles(x)(startingPoint - 1).isAnchor) {
               startingPoint -= 1
             }
-            while (startingPoint != x) {
-              startingTrie = startingTrie.children(board.boardTiles(startingPoint)(y).tile.get.letter - 65)
-              wordPoints += TileUtilities.getTileScore(board.boardTiles(startingPoint)(y).tile.get.letter)
+            while (startingPoint != y) {
+              startingTrie = startingTrie.children(board.boardTiles(x)(startingPoint).tile.get.letter - 65)
+              wordPoints += TileUtilities.getTileScore(board.boardTiles(x)(startingPoint).tile.get.letter)
               startingPoint += 1
             }
             extendRight(x, y, x, y, rack.tiles, startingTrie, wordPoints)
           } else {
-            var startingLimit = y
-            while (startingLimit > 0 && !board.boardTiles(startingLimit - 1)(y).isAnchor) {
-              startingLimit -= 1
+            var startingPoint = y
+            var startingLimit = 0
+            while (startingLimit > 0 && !board.boardTiles(x)(startingPoint - 1).isAnchor) {
+              startingPoint -= 1
+              startingLimit += 1
             }
             extendLeft(x, y, x, y, rack.tiles, startingLimit, trie, 0)
           }
@@ -68,11 +70,7 @@ class Game(board: Board, trie: Trie, rack: Rack) {
 
       extendRight(initX, initY, currX, currY, letters, currTrie, currPoints)
       if (limit > 0) {
-        if (board.boardTiles(currX)(currY).tile.nonEmpty) {
-          extendLeft(initX, initY, currX, currY - 1, letters, limit - 1, currTrie, currPoints)
-        } else {
-
-        }
+        extendLeft(initX, initY, currX, currY - 1, letters, limit - 1, currTrie, currPoints)
       }
     }
 
@@ -93,12 +91,20 @@ class Game(board: Board, trie: Trie, rack: Rack) {
           }
 
           for (tileIndex <- letters.indices) {
-            if (boardTile.verticalCrossChecks.contains(letters(tileIndex).letter) &&
-              Option(currTrie.children(letters(tileIndex).letter - 65)).nonEmpty) {
-              val newTrie: Trie = currTrie.children(letters(tileIndex).letter - 65)
+            val rackTile: PlayerTile = letters(tileIndex)
+
+            if (!boardTile.requiresAboveCrossCheck && !boardTile.requiresBelowCrossCheck) {
+              val newTrie: Trie = currTrie.children(rackTile.letter - 65)
               val newLetters = letters.clone()
-              val tileScore: Int = TileUtilities.getTileScore(letters(tileIndex).letter) +
-                boardTile.verticalCrossChecks(letters(tileIndex).letter)
+              val tileScore: Int = TileUtilities.getTileScore(rackTile.letter)
+              newLetters.remove(tileIndex)
+              extendRight(initX, initY, currX, currY + 1, newLetters, newTrie, currPoints + tileScore)
+            } else if (boardTile.verticalCrossChecks.contains(rackTile.letter) &&
+              Option(currTrie.children(rackTile.letter - 65)).nonEmpty) {
+              val newTrie: Trie = currTrie.children(rackTile.letter - 65)
+              val newLetters = letters.clone()
+              val tileScore: Int = TileUtilities.getTileScore(rackTile.letter) +
+                boardTile.verticalCrossChecks(rackTile.letter)
               newLetters.remove(tileIndex)
               extendRight(initX, initY, currX, currY + 1, newLetters, newTrie, currPoints + tileScore)
             }
@@ -110,6 +116,13 @@ class Game(board: Board, trie: Trie, rack: Rack) {
             extendRight(initX, initY, currX, currY + 1, letters, newTrie, currPoints + tileScore)
           }
         }
+      } else if (Option(currTrie).nonEmpty && currTrie.isComplete &&
+        currPoints > highestScoringWord.score) {
+        highestScoringWord.word = currTrie.completedWord
+        highestScoringWord.score = currPoints
+        highestScoringWord.x = initX
+        highestScoringWord.y = initY
+        highestScoringWord.direction = Direction.HORIZONTAL
       }
     }
 
