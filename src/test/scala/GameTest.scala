@@ -34,8 +34,8 @@ class GameTest extends AnyFunSuite {
     val game: Game = new Game(board, trie, rack)
     game.updateBoard()
 
-    val highestScoringWord: (String, Int, Int, Int, Direction.Value) = game.findHighestScoringWord()
+    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord()
 
-    assert(highestScoringWord._1 === "")
+    assert(highestScoringWord.word === "")
   }
 }

@@ -20,8 +20,9 @@ class Game(board: Board, trie: Trie, rack: Rack) {
 
   def updateBoard(): Unit = board.updateBoard()
 
-  def findHighestScoringWord(): (String, Int, Int, Int, Direction.Value) = {
-    var highestScoringWord: (String, Int, Int, Int, Direction.Value) = ("", 0, 0, 0, Direction.HORIZONTAL)
+  def findHighestScoringWord(): HighestScoringWord = {
+    var highestScoringWord: HighestScoringWord =
+      new HighestScoringWord("", 0, 0, 0, Direction.HORIZONTAL)
 
     for (x <- board.boardTiles.indices) {
       for (y <- board.boardTiles(x).indices) {
@@ -83,8 +84,12 @@ class Game(board: Board, trie: Trie, rack: Rack) {
 
         if (boardTile.tile.isEmpty) {
 
-          if (currTrie.isComplete && currPoints > highestScoringWord._3) {
-            highestScoringWord = (currTrie.completedWord, initX, initY, currPoints, Direction.HORIZONTAL)
+          if (currTrie.isComplete && currPoints > highestScoringWord.score) {
+            highestScoringWord.word = currTrie.completedWord
+            highestScoringWord.score = currPoints
+            highestScoringWord.x = initX
+            highestScoringWord.y = initY
+            highestScoringWord.direction = Direction.HORIZONTAL
           }
 
           for (tileIndex <- letters.indices) {
