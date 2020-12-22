@@ -29,7 +29,7 @@ class GameTest extends AnyFunSuite {
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile())
     ), trie)
 
-    rack.setRack(List(G(), A(), Z(), E(), S()).to(ListBuffer))
+    rack.setRack(List(A(), P(), E(), R()).to(ListBuffer))
 
     val game: Game = new Game(board, trie, rack)
     game.updateBoard()
