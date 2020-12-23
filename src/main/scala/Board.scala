@@ -86,11 +86,23 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
     for (i <- 0 until 26) {
       var tmpTrie = startingTrie.children(i)
+      var shouldDouble: Boolean = false
+      var shouldTriple: Boolean = false
 
       if (tmpTrie != null) {
         var curr = startingPoint
         var currPoints = startingCrossSumPoints
         currPoints += TileUtilities.getTileScore(tmpTrie.value)
+
+        if (curr < boardTiles.length) {
+          boardTiles(x)(curr).multiplier match {
+            case Multiplier.DOUBLE_LETTER => currPoints *= 2
+            case Multiplier.TRIPLE_LETTER => currPoints *= 3
+            case Multiplier.DOUBLE_WORD => shouldDouble = true
+            case Multiplier.TRIPLE_WORD => shouldTriple = true
+            case Multiplier.NONE =>
+          }
+        }
 
         while (curr < boardTiles.length &&
           boardTiles(x)(curr).tile.nonEmpty &&
@@ -102,6 +114,8 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
         if ((curr == boardTiles.length || boardTiles(x)(curr).tile.isEmpty) && tmpTrie.isComplete) {
           val char: Char = (i + 65).toChar
+          if (shouldDouble) currPoints *= 2
+          if (shouldTriple) currPoints *= 3
           boardTiles(x)(y).horizontalCrossChecks += char -> currPoints
         }
       }
@@ -128,11 +142,23 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
     for (i <- 0 until 26) {
       var tmpTrie = startingTrie.children(i)
+      var shouldDouble: Boolean = false
+      var shouldTriple: Boolean = false
 
       if (tmpTrie != null) {
         var curr = startingPoint
         var currPoints = startingCrossSumPoints
         currPoints += TileUtilities.getTileScore(tmpTrie.value)
+
+        if (curr < boardTiles.length) {
+          boardTiles(curr)(y).multiplier match {
+            case Multiplier.DOUBLE_LETTER => currPoints *= 2
+            case Multiplier.TRIPLE_LETTER => currPoints *= 3
+            case Multiplier.DOUBLE_WORD => shouldDouble = true
+            case Multiplier.TRIPLE_WORD => shouldTriple = true
+            case Multiplier.NONE =>
+          }
+        }
 
         while (curr < boardTiles.length &&
           boardTiles(curr)(y).tile.nonEmpty &&
@@ -144,6 +170,8 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
         if ((curr == boardTiles.length || boardTiles(curr)(y).tile.isEmpty) && tmpTrie.isComplete) {
           val char: Char = (i + 65).toChar
+          if (shouldDouble) currPoints *= 2
+          if (shouldTriple) currPoints *= 3
           boardTiles(x)(y).verticalCrossChecks += char -> currPoints
         }
       }

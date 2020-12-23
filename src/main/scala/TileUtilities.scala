@@ -93,6 +93,12 @@ object TileUtilities {
 
   def getTileScore(c: Char): Int = tileScoreMappings.getOrElse(c, 0)
 
+  def getBonusValue(multiplier: Multiplier.Value): Int = multiplier match {
+    case Multiplier.DOUBLE_WORD => 2
+    case Multiplier.TRIPLE_WORD => 3
+    case _ => 1
+  }
+
   def EmptyBoardTile(): BoardTile = new BoardTile(
     None, Multiplier.NONE, new mutable.HashMap[Char, Int], false, false,
     new mutable.HashMap[Char, Int], false,
