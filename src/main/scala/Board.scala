@@ -89,7 +89,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
     boardTiles(x)(startingPoint).multiplier match {
       case Multiplier.DOUBLE_WORD => shouldDouble = true
       case Multiplier.TRIPLE_WORD => shouldTriple = true
-      case Multiplier.NONE =>
+      case _ =>
     }
 
     startingPoint += 1
@@ -148,7 +148,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
     boardTiles(startingPoint)(y).multiplier match {
       case Multiplier.DOUBLE_WORD => shouldDouble = true
       case Multiplier.TRIPLE_WORD => shouldTriple = true
-      case Multiplier.NONE =>
+      case _ =>
     }
 
     startingPoint += 1

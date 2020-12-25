@@ -81,7 +81,7 @@ object GameUtilities {
         EmptyBoardTile(), EmptyBoardTile(),
         DoubleLetterTile(),
         EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(),
-        DoubleWordTile(),
+        StarterTile(),
         EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(),
         DoubleLetterTile(),
         EmptyBoardTile(), EmptyBoardTile(),

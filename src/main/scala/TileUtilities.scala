@@ -111,6 +111,12 @@ object TileUtilities {
     false, false
   )
 
+  def StarterTile(): BoardTile = new BoardTile(
+    None, Multiplier.DOUBLE_WORD, new mutable.HashMap[Char, Int], false, false,
+    new mutable.HashMap[Char, Int], false,
+    false, true
+  )
+
   def DoubleLetterTile(): BoardTile = new BoardTile(
     None, Multiplier.DOUBLE_LETTER, new mutable.HashMap[Char, Int], false, false,
     new mutable.HashMap[Char, Int], false,

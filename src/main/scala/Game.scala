@@ -14,9 +14,7 @@ import scala.collection.mutable.ListBuffer
 
 class Game(board: Board, trie: Trie, rack: Rack) {
 
-  def initializeGame(): Unit = {
-    board.boardTiles = GameUtilities.initialiseBoard()
-  }
+  def initializeGame(): Unit = board.boardTiles = GameUtilities.initialiseBoard()
 
   def updateBoard(): Unit = board.updateBoard()
 
@@ -129,14 +127,16 @@ class Game(board: Board, trie: Trie, rack: Rack) {
             if (!boardTile.requiresAboveCrossCheck && !boardTile.requiresBelowCrossCheck) {
               tileScore = TileUtilities.getTileScore(rackTile.letter) *
                 TileUtilities.getTileMultiplierValue(boardTile.multiplier)
+              extendRight(initX, initY, currX, currY + 1, newLetters, newTrie,
+                currPoints + tileScore, crossCheckPoints + crossCheckScore, tmpBonuses)
             } else if (boardTile.verticalCrossChecks.contains(rackTile.letter) &&
               Option(currTrie.children(rackTile.letter - 65)).nonEmpty) {
               tileScore = TileUtilities.getTileScore(rackTile.letter) *
                 TileUtilities.getTileMultiplierValue(boardTile.multiplier)
               crossCheckScore = boardTile.verticalCrossChecks(rackTile.letter)
+              extendRight(initX, initY, currX, currY + 1, newLetters, newTrie,
+                currPoints + tileScore, crossCheckPoints + crossCheckScore, tmpBonuses)
             }
-            extendRight(initX, initY, currX, currY + 1, newLetters, newTrie,
-              currPoints + tileScore, crossCheckPoints + crossCheckScore, tmpBonuses)
           }
         } else if (Option(currTrie.children(boardTile.tile.get.letter - 65)).nonEmpty) {
           val newTrie: Trie = currTrie.children(boardTile.tile.get.letter - 65)
@@ -196,14 +196,16 @@ class Game(board: Board, trie: Trie, rack: Rack) {
             if (!boardTile.requiresLeftCrossCheck && !boardTile.requiresRightCrossCheck) {
               tileScore = TileUtilities.getTileScore(rackTile.letter) *
                 TileUtilities.getTileMultiplierValue(boardTile.multiplier)
+              extendBelow(initX, initY, currX + 1, currY, newLetters, newTrie,
+                currPoints + tileScore, crossCheckPoints + crossCheckScore, tmpBonuses)
             } else if (boardTile.horizontalCrossChecks.contains(rackTile.letter) &&
               Option(currTrie.children(rackTile.letter - 65)).nonEmpty) {
               tileScore = TileUtilities.getTileScore(rackTile.letter) *
                 TileUtilities.getTileMultiplierValue(boardTile.multiplier)
               crossCheckScore = boardTile.horizontalCrossChecks(rackTile.letter)
+              extendBelow(initX, initY, currX + 1, currY, newLetters, newTrie,
+                currPoints + tileScore, crossCheckPoints + crossCheckScore, tmpBonuses)
             }
-            extendBelow(initX, initY, currX + 1, currY, newLetters, newTrie,
-              currPoints + tileScore, crossCheckPoints + crossCheckScore, tmpBonuses)
           }
         } else if (Option(currTrie.children(boardTile.tile.get.letter - 65)).nonEmpty) {
           val newTrie: Trie = currTrie.children(boardTile.tile.get.letter - 65)
