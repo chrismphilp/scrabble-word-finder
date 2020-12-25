@@ -118,8 +118,8 @@ class Game(board: Board, trie: Trie, rack: Rack) {
             val rackTile: PlayerTile = letters(tileIndex)
             val newTrie: Trie = currTrie.children(rackTile.letter - 65)
             val newLetters = letters.clone()
-            var tileScore: Int = 0
             newLetters.remove(tileIndex)
+            var tileScore: Int = 0
 
             if (!boardTile.requiresAboveCrossCheck && !boardTile.requiresBelowCrossCheck) {
               tileScore = TileUtilities.getTileScore(rackTile.letter) *
@@ -181,18 +181,18 @@ class Game(board: Board, trie: Trie, rack: Rack) {
             val newTrie: Trie = currTrie.children(rackTile.letter - 65)
             val newLetters = letters.clone()
             newLetters.remove(tileIndex)
+            var tileScore: Int = 0
 
             if (!boardTile.requiresLeftCrossCheck && !boardTile.requiresRightCrossCheck) {
-              val tileScore: Int = TileUtilities.getTileScore(rackTile.letter) *
+              tileScore = TileUtilities.getTileScore(rackTile.letter) *
                 TileUtilities.getTileMultiplierValue(boardTile.multiplier)
-              extendBelow(initX, initY, currX + 1, currY, newLetters, newTrie, currPoints + tileScore, tmpBonuses)
             } else if (boardTile.horizontalCrossChecks.contains(rackTile.letter) &&
               Option(currTrie.children(rackTile.letter - 65)).nonEmpty) {
-              val tileScore: Int = (TileUtilities.getTileScore(rackTile.letter) *
+              tileScore = (TileUtilities.getTileScore(rackTile.letter) *
                 TileUtilities.getTileMultiplierValue(boardTile.multiplier)) +
                 boardTile.horizontalCrossChecks(rackTile.letter)
-              extendBelow(initX, initY, currX + 1, currY, newLetters, newTrie, currPoints + tileScore, tmpBonuses)
             }
+            extendBelow(initX, initY, currX + 1, currY, newLetters, newTrie, currPoints + tileScore, tmpBonuses)
           }
         } else if (Option(currTrie.children(boardTile.tile.get.letter - 65)).nonEmpty) {
           val newTrie: Trie = currTrie.children(boardTile.tile.get.letter - 65)
