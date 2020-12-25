@@ -73,7 +73,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
     // Need to get Trie to correct point
     if (boardTiles(x)(y).requiresLeftCrossCheck) {
-      while (startingPoint > 0 && boardTiles(x)(startingPoint - 1).tile.nonEmpty){
+      while (startingPoint > 0 && boardTiles(x)(startingPoint - 1).tile.nonEmpty) {
         startingPoint -= 1
       }
       while (startingPoint != y) {
@@ -82,27 +82,30 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
         startingPoint += 1
       }
     }
+
+    var shouldDouble: Boolean = false
+    var shouldTriple: Boolean = false
+
+    boardTiles(x)(startingPoint).multiplier match {
+      case Multiplier.DOUBLE_WORD => shouldDouble = true
+      case Multiplier.TRIPLE_WORD => shouldTriple = true
+      case Multiplier.NONE =>
+    }
+
     startingPoint += 1
 
     for (i <- 0 until 26) {
       var tmpTrie = startingTrie.children(i)
-      var shouldDouble: Boolean = false
-      var shouldTriple: Boolean = false
 
       if (tmpTrie != null) {
         var curr = startingPoint
-        var currPoints = startingCrossSumPoints
-        currPoints += TileUtilities.getTileScore(tmpTrie.value)
 
-        if (curr < boardTiles.length) {
-          boardTiles(x)(curr).multiplier match {
-            case Multiplier.DOUBLE_LETTER => currPoints *= 2
-            case Multiplier.TRIPLE_LETTER => currPoints *= 3
-            case Multiplier.DOUBLE_WORD => shouldDouble = true
-            case Multiplier.TRIPLE_WORD => shouldTriple = true
-            case Multiplier.NONE =>
-          }
-        }
+        var currPoints = TileUtilities.getTileScore(tmpTrie.value) *
+          (boardTiles(x)(y).multiplier match {
+          case Multiplier.DOUBLE_LETTER => 2
+          case Multiplier.TRIPLE_LETTER => 3
+          case _ => 1
+        }) + startingCrossSumPoints
 
         while (curr < boardTiles.length &&
           boardTiles(x)(curr).tile.nonEmpty &&
@@ -138,27 +141,30 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
         startingPoint += 1
       }
     }
+
+    var shouldDouble: Boolean = false
+    var shouldTriple: Boolean = false
+
+    boardTiles(startingPoint)(y).multiplier match {
+      case Multiplier.DOUBLE_WORD => shouldDouble = true
+      case Multiplier.TRIPLE_WORD => shouldTriple = true
+      case Multiplier.NONE =>
+    }
+
     startingPoint += 1
 
     for (i <- 0 until 26) {
       var tmpTrie = startingTrie.children(i)
-      var shouldDouble: Boolean = false
-      var shouldTriple: Boolean = false
 
       if (tmpTrie != null) {
         var curr = startingPoint
-        var currPoints = startingCrossSumPoints
-        currPoints += TileUtilities.getTileScore(tmpTrie.value)
 
-        if (curr < boardTiles.length) {
-          boardTiles(curr)(y).multiplier match {
-            case Multiplier.DOUBLE_LETTER => currPoints *= 2
-            case Multiplier.TRIPLE_LETTER => currPoints *= 3
-            case Multiplier.DOUBLE_WORD => shouldDouble = true
-            case Multiplier.TRIPLE_WORD => shouldTriple = true
-            case Multiplier.NONE =>
-          }
-        }
+        var currPoints = TileUtilities.getTileScore(tmpTrie.value) *
+          (boardTiles(x)(y).multiplier match {
+            case Multiplier.DOUBLE_LETTER => 2
+            case Multiplier.TRIPLE_LETTER => 3
+            case _ => 1
+          }) + startingCrossSumPoints
 
         while (curr < boardTiles.length &&
           boardTiles(curr)(y).tile.nonEmpty &&

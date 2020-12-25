@@ -93,7 +93,13 @@ object TileUtilities {
 
   def getTileScore(c: Char): Int = tileScoreMappings.getOrElse(c, 0)
 
-  def getBonusValue(multiplier: Multiplier.Value): Int = multiplier match {
+  def getTileMultiplierValue(multiplier: Multiplier.Value): Int = multiplier match {
+    case Multiplier.DOUBLE_LETTER => 2
+    case Multiplier.TRIPLE_LETTER => 3
+    case _ => 1
+  }
+
+  def getWordMultiplierValue(multiplier: Multiplier.Value): Int = multiplier match {
     case Multiplier.DOUBLE_WORD => 2
     case Multiplier.TRIPLE_WORD => 3
     case _ => 1

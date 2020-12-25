@@ -13,7 +13,7 @@ class GameTest extends AnyFunSuite {
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
       Array(
-        EmptyBoardTile(),
+        TripleWordTile(),
         new BoardTile(Option(A()), Multiplier.NONE, new mutable.HashMap[Char, Int], false,
           false, new mutable.HashMap[Char, Int], false,
           false, false),
