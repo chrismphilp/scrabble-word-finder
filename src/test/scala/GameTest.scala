@@ -36,6 +36,61 @@ class GameTest extends AnyFunSuite {
 
     val highestScoringWord: HighestScoringWord = game.findHighestScoringWord()
 
-    assert(highestScoringWord.word === "")
+    assert(highestScoringWord.word === "APER")
+    assert(highestScoringWord.score === 42)
+  }
+
+  test("Should correctly update Cross-Check tiles with single vertical word") {
+    val board: Board = new Board(Array(
+      Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
+      Array(
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        new BoardTile(Option(H()), Multiplier.NONE, new mutable.HashMap[Char, Int], false,
+          false, new mutable.HashMap[Char, Int], false,
+          false, false)
+      ),
+      Array(
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        TripleWordTile(),
+        new BoardTile(Option(E()), Multiplier.NONE, new mutable.HashMap[Char, Int], false,
+          false, new mutable.HashMap[Char, Int], false,
+          false, false)
+      ),
+      Array(
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        new BoardTile(Option(A()), Multiplier.NONE, new mutable.HashMap[Char, Int], false,
+          false, new mutable.HashMap[Char, Int], false,
+          false, false)
+      ),
+      Array(
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        EmptyBoardTile(),
+        new BoardTile(Option(P()), Multiplier.NONE, new mutable.HashMap[Char, Int], false,
+          false, new mutable.HashMap[Char, Int], false,
+          false, false)
+      )
+    ), trie)
+
+    board.updateBoard()
+
+    rack.setRack(List(A(), P(), E(), R()).to(ListBuffer))
+
+    val game: Game = new Game(board, trie, rack)
+    game.updateBoard()
+
+    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord()
+
+    assert(highestScoringWord.word === "RAPE")
+    assert(highestScoringWord.score === 37)
   }
 }
