@@ -35,7 +35,7 @@ class GameTest extends AnyFunSuite {
     val game: Game = new Game(board, trie, rack)
     game.updateBoard()
 
-    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord()
+    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
 
     assert(highestScoringWord.word === "APER")
     assert(highestScoringWord.score === 42)
@@ -83,7 +83,7 @@ class GameTest extends AnyFunSuite {
     val game: Game = new Game(board, trie, rack)
     game.updateBoard()
 
-    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord()
+    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
 
     assert(highestScoringWord.word === "PAR")
     assert(highestScoringWord.score === 27)
@@ -135,7 +135,7 @@ class GameTest extends AnyFunSuite {
     val game: Game = new Game(board, trie, rack)
     game.updateBoard()
 
-    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord()
+    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
 
     assert(highestScoringWord.word === "RAPE")
     assert(highestScoringWord.score === 37)
@@ -201,7 +201,7 @@ class GameTest extends AnyFunSuite {
     val game: Game = new Game(board, trie, rack)
     game.updateBoard()
 
-    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord()
+    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
 
     assert(highestScoringWord.word === "PASH")
     assert(highestScoringWord.score === 18)
@@ -214,21 +214,21 @@ class GameTest extends AnyFunSuite {
     rack.setRack(List(S(), P(), E(), A(), R(), E(), L()).to(ListBuffer))
     val game: Game = new Game(board, trie, rack)
     game.initializeGame()
-    var highestScoringWord: HighestScoringWord = game.findHighestScoringWord()
+    var highestScoringWord: HighestScoringWord = game.findHighestScoringWord(true)
 
     assert(highestScoringWord.word === "RELAPSE")
     assert(highestScoringWord.score === 74)
 
     rack.setRack(List(D(), E(), Y(), N(), O(), R(), T()).to(ListBuffer))
     game.initializeGame()
-    highestScoringWord = game.findHighestScoringWord()
+    highestScoringWord = game.findHighestScoringWord(true)
 
     assert(highestScoringWord.word === "RODNEY")
     assert(highestScoringWord.score === 28)
 
     rack.setRack(List(Z(), E(), L(), N(), O(), R(), S()).to(ListBuffer))
     game.initializeGame()
-    highestScoringWord = game.findHighestScoringWord()
+    highestScoringWord = game.findHighestScoringWord(true)
 
     assert(highestScoringWord.word === "ZONERS")
     assert(highestScoringWord.score === 50)
@@ -261,7 +261,7 @@ class GameTest extends AnyFunSuite {
     var game: Game = new Game(board, trie, rack)
     game.updateBoard()
 
-    var highestScoringWord: HighestScoringWord = game.findHighestScoringWord()
+    var highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
 
     assert(highestScoringWord.word === "PRESALE")
     assert(highestScoringWord.score === 96)
@@ -281,7 +281,7 @@ class GameTest extends AnyFunSuite {
 
     game = new Game(board, trie, rack)
     game.updateBoard()
-    highestScoringWord = game.findHighestScoringWord()
+    highestScoringWord = game.findHighestScoringWord(false)
 
     assert(highestScoringWord.word === "PLEASERS")
     assert(highestScoringWord.score === 70)
@@ -298,7 +298,7 @@ class GameTest extends AnyFunSuite {
     rack.setRack(List(Q(), U(), O(), T(), E(), D(), U()).to(ListBuffer))
     game = new Game(board, trie, rack)
     game.updateBoard()
-    highestScoringWord = game.findHighestScoringWord()
+    highestScoringWord = game.findHighestScoringWord(false)
 
     assert(highestScoringWord.word === "QUOTED")
     assert(highestScoringWord.score === 39)
