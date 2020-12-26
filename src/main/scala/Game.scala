@@ -1,3 +1,5 @@
+import TileUtilities.FilledBoardTile
+
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 
@@ -12,11 +14,16 @@ import scala.collection.mutable.ListBuffer
   6) Combine letters multipliers as going, and compute word multipliers when end of word is found
  */
 
-class Game(board: Board, trie: Trie, rack: Rack) {
+class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
 
-  def initializeGame(): Unit = board.boardTiles = GameUtilities.initialiseBoard()
+  def initializeGame(): Unit = {
+    rack.fillRack(bag)
+    board.boardTiles = GameUtilities.initialiseBoard()
+  }
 
   def updateBoard(): Unit = board.updateBoard()
+
+  def updateRack(): Unit = rack.fillRack(bag)
 
   def findHighestScoringWord(isStartingWord: Boolean): HighestScoringWord = {
     val highestScoringWord: HighestScoringWord =
@@ -250,8 +257,37 @@ class Game(board: Board, trie: Trie, rack: Rack) {
     highestScoringWord.direction = direction
   }
 
+  def placeHighestScoringWord(highestScoringWord: HighestScoringWord): Unit = {
+    val newTiles: ListBuffer[PlayerTile] = rack.tiles.clone()
+
+    if (highestScoringWord.direction.equals(Direction.HORIZONTAL)) {
+      for (y <- highestScoringWord.y until highestScoringWord.y + highestScoringWord.word.length) {
+        if (board.boardTiles(highestScoringWord.x)(y).tile.isEmpty) {
+          val char: Char = highestScoringWord.word.charAt(y - highestScoringWord.y)
+          val tileIndex: Int = newTiles.indexWhere(playerTile => playerTile.letter.equals(char))
+          board.boardTiles(highestScoringWord.x)(y) = FilledBoardTile(newTiles(tileIndex))
+          newTiles.remove(tileIndex)
+        }
+      }
+    } else {
+      for (x <- highestScoringWord.x until highestScoringWord.x + highestScoringWord.word.length) {
+        if (board.boardTiles(x)(highestScoringWord.y).tile.isEmpty) {
+          val char: Char = highestScoringWord.word.charAt(x - highestScoringWord.x)
+          val tileIndex: Int = newTiles.indexWhere(playerTile => playerTile.letter.equals(char))
+          board.boardTiles(x)(highestScoringWord.y) = FilledBoardTile(newTiles(tileIndex))
+          newTiles.remove(tileIndex)
+        }
+      }
+    }
+    rack.setRack(newTiles)
+  }
+
   def hasJoinedToWord(boardTile: BoardTile): Boolean = {
     boardTile.requiresLeftCrossCheck || boardTile.requiresRightCrossCheck ||
       boardTile.requiresAboveCrossCheck || boardTile.requiresBelowCrossCheck
+  }
+
+  def printBoard(): Unit = {
+
   }
 }

@@ -8,6 +8,7 @@ import scala.collection.mutable.ListBuffer
 class GameTest extends AnyFunSuite {
   val trie: Trie = FileProcessor.convertFileToTrie("collins-scrabble-words-2019.txt")
   val rack: Rack = new Rack(new ListBuffer[PlayerTile])
+  val bag: Bag = createInitialBag()
 
   test("Should correctly find highest scoring word from single horizontal word") {
     val board: Board = new Board(Array(
@@ -32,7 +33,7 @@ class GameTest extends AnyFunSuite {
 
     rack.setRack(List(A(), P(), E(), R()).to(ListBuffer))
 
-    val game: Game = new Game(board, trie, rack)
+    val game: Game = new Game(board, trie, rack, bag)
     game.updateBoard()
 
     val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
@@ -80,7 +81,7 @@ class GameTest extends AnyFunSuite {
 
     rack.setRack(List(A(), P(), E(), R()).to(ListBuffer))
 
-    val game: Game = new Game(board, trie, rack)
+    val game: Game = new Game(board, trie, rack, bag)
     game.updateBoard()
 
     val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
@@ -132,7 +133,7 @@ class GameTest extends AnyFunSuite {
 
     rack.setRack(List(A(), P(), E(), R()).to(ListBuffer))
 
-    val game: Game = new Game(board, trie, rack)
+    val game: Game = new Game(board, trie, rack, bag)
     game.updateBoard()
 
     val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
@@ -198,7 +199,7 @@ class GameTest extends AnyFunSuite {
 
     rack.setRack(List(S(), P(), E(), R()).to(ListBuffer))
 
-    val game: Game = new Game(board, trie, rack)
+    val game: Game = new Game(board, trie, rack, bag)
     game.updateBoard()
 
     val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
@@ -212,7 +213,7 @@ class GameTest extends AnyFunSuite {
     val board: Board = new Board(Array(), trie)
 
     rack.setRack(List(S(), P(), E(), A(), R(), E(), L()).to(ListBuffer))
-    val game: Game = new Game(board, trie, rack)
+    val game: Game = new Game(board, trie, rack, bag)
     game.initializeGame()
     var highestScoringWord: HighestScoringWord = game.findHighestScoringWord(true)
 
@@ -258,7 +259,7 @@ class GameTest extends AnyFunSuite {
     board.boardTiles(7)(9) = FilledBoardTile(H())
 
     rack.setRack(List(S(), P(), E(), A(), R(), E(), L()).to(ListBuffer))
-    var game: Game = new Game(board, trie, rack)
+    var game: Game = new Game(board, trie, rack, bag)
     game.updateBoard()
 
     var highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
@@ -279,7 +280,7 @@ class GameTest extends AnyFunSuite {
     board.boardTiles(7)(10) = FilledBoardTile(S())
     board.boardTiles(8)(10) = FilledBoardTile(S())
 
-    game = new Game(board, trie, rack)
+    game = new Game(board, trie, rack, bag)
     game.updateBoard()
     highestScoringWord = game.findHighestScoringWord(false)
 
@@ -296,11 +297,58 @@ class GameTest extends AnyFunSuite {
     board.boardTiles(1)(8) = FilledBoardTile(S())
 
     rack.setRack(List(Q(), U(), O(), T(), E(), D(), U()).to(ListBuffer))
-    game = new Game(board, trie, rack)
+    game = new Game(board, trie, rack, bag)
     game.updateBoard()
     highestScoringWord = game.findHighestScoringWord(false)
 
     assert(highestScoringWord.word === "QUOTED")
     assert(highestScoringWord.score === 39)
+
+    board.boardTiles(1)(11) = FilledBoardTile(Q())
+    board.boardTiles(2)(11) = FilledBoardTile(U())
+    board.boardTiles(3)(11) = FilledBoardTile(O())
+    board.boardTiles(4)(11) = FilledBoardTile(T())
+    board.boardTiles(5)(11) = FilledBoardTile(E())
+    board.boardTiles(6)(11) = FilledBoardTile(D())
+
+    rack.setRack(List(U(), V(), D(), I(), A(), O(), X()).to(ListBuffer))
+    game = new Game(board, trie, rack, bag)
+    game.updateBoard()
+    highestScoringWord = game.findHighestScoringWord(false)
+
+    assert(highestScoringWord.word === "DOUX")
+    assert(highestScoringWord.score === 47)
+
+    board.boardTiles(0)(6) = FilledBoardTile(D())
+    board.boardTiles(0)(7) = FilledBoardTile(O())
+    board.boardTiles(0)(8) = FilledBoardTile(U())
+    board.boardTiles(0)(9) = FilledBoardTile(X())
+
+    rack.setRack(List(C(), V(), Y(), I(), A(), B(), E()).to(ListBuffer))
+    game = new Game(board, trie, rack, bag)
+    game.updateBoard()
+    highestScoringWord = game.findHighestScoringWord(false)
+
+    assert(highestScoringWord.word === "VIBEY")
+    assert(highestScoringWord.score === 30)
+  }
+
+  test("Should correctly simulate whole game without errors") {
+
+
+    val board: Board = new Board(initialiseBoard(), trie)
+    val game: Game = new Game(board, trie, rack, bag)
+    game.updateRack()
+    game.placeHighestScoringWord(game.findHighestScoringWord(true))
+    game.updateRack()
+
+    while (rack.tiles.nonEmpty) {
+      game.updateBoard()
+      val highestScoringWord = game.findHighestScoringWord(false)
+      game.placeHighestScoringWord(highestScoringWord)
+      game.updateRack()
+      game.printBoard()
+    }
+    println("Done")
   }
 }
