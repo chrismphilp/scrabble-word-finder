@@ -83,43 +83,45 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
       }
     }
 
-    var shouldDouble: Boolean = false
-    var shouldTriple: Boolean = false
+    if (Option(startingTrie).nonEmpty) {
+      var shouldDouble: Boolean = false
+      var shouldTriple: Boolean = false
 
-    boardTiles(x)(startingPoint).multiplier match {
-      case Multiplier.DOUBLE_WORD => shouldDouble = true
-      case Multiplier.TRIPLE_WORD => shouldTriple = true
-      case _ =>
-    }
+      boardTiles(x)(startingPoint).multiplier match {
+        case Multiplier.DOUBLE_WORD => shouldDouble = true
+        case Multiplier.TRIPLE_WORD => shouldTriple = true
+        case _ =>
+      }
 
-    startingPoint += 1
+      startingPoint += 1
 
-    for (i <- 0 until 26) {
-      var tmpTrie = startingTrie.children(i)
+      for (i <- 0 until 26) {
+        var tmpTrie = startingTrie.children(i)
 
-      if (tmpTrie != null) {
-        var curr = startingPoint
+        if (tmpTrie != null) {
+          var curr = startingPoint
 
-        var currPoints = TileUtilities.getTileScore(tmpTrie.value) *
-          (boardTiles(x)(y).multiplier match {
-          case Multiplier.DOUBLE_LETTER => 2
-          case Multiplier.TRIPLE_LETTER => 3
-          case _ => 1
-        }) + startingCrossSumPoints
+          var currPoints = TileUtilities.getTileScore(tmpTrie.value) *
+            (boardTiles(x)(y).multiplier match {
+              case Multiplier.DOUBLE_LETTER => 2
+              case Multiplier.TRIPLE_LETTER => 3
+              case _ => 1
+            }) + startingCrossSumPoints
 
-        while (curr < boardTiles.length &&
-          boardTiles(x)(curr).tile.nonEmpty &&
-          Option(tmpTrie.children(boardTiles(x)(curr).tile.get.letter - 65)).nonEmpty) {
-          tmpTrie = tmpTrie.children(boardTiles(x)(curr).tile.get.letter - 65)
-          currPoints += TileUtilities.getTileScore(boardTiles(x)(curr).tile.get.letter)
-          curr += 1
-        }
+          while (curr < boardTiles.length &&
+            boardTiles(x)(curr).tile.nonEmpty &&
+            Option(tmpTrie.children(boardTiles(x)(curr).tile.get.letter - 65)).nonEmpty) {
+            tmpTrie = tmpTrie.children(boardTiles(x)(curr).tile.get.letter - 65)
+            currPoints += TileUtilities.getTileScore(boardTiles(x)(curr).tile.get.letter)
+            curr += 1
+          }
 
-        if ((curr == boardTiles.length || boardTiles(x)(curr).tile.isEmpty) && tmpTrie.isComplete) {
-          val char: Char = (i + 65).toChar
-          if (shouldDouble) currPoints *= 2
-          if (shouldTriple) currPoints *= 3
-          boardTiles(x)(y).horizontalCrossChecks += char -> currPoints
+          if ((curr == boardTiles.length || boardTiles(x)(curr).tile.isEmpty) && tmpTrie.isComplete) {
+            val char: Char = (i + 65).toChar
+            if (shouldDouble) currPoints *= 2
+            if (shouldTriple) currPoints *= 3
+            boardTiles(x)(y).horizontalCrossChecks += char -> currPoints
+          }
         }
       }
     }
@@ -142,43 +144,45 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
       }
     }
 
-    var shouldDouble: Boolean = false
-    var shouldTriple: Boolean = false
+    if (Option(startingTrie).nonEmpty) {
+      var shouldDouble: Boolean = false
+      var shouldTriple: Boolean = false
 
-    boardTiles(startingPoint)(y).multiplier match {
-      case Multiplier.DOUBLE_WORD => shouldDouble = true
-      case Multiplier.TRIPLE_WORD => shouldTriple = true
-      case _ =>
-    }
+      boardTiles(startingPoint)(y).multiplier match {
+        case Multiplier.DOUBLE_WORD => shouldDouble = true
+        case Multiplier.TRIPLE_WORD => shouldTriple = true
+        case _ =>
+      }
 
-    startingPoint += 1
+      startingPoint += 1
 
-    for (i <- 0 until 26) {
-      var tmpTrie = startingTrie.children(i)
+      for (i <- 0 until 26) {
+        var tmpTrie = startingTrie.children(i)
 
-      if (tmpTrie != null) {
-        var curr = startingPoint
+        if (tmpTrie != null) {
+          var curr = startingPoint
 
-        var currPoints = TileUtilities.getTileScore(tmpTrie.value) *
-          (boardTiles(x)(y).multiplier match {
-            case Multiplier.DOUBLE_LETTER => 2
-            case Multiplier.TRIPLE_LETTER => 3
-            case _ => 1
-          }) + startingCrossSumPoints
+          var currPoints = TileUtilities.getTileScore(tmpTrie.value) *
+            (boardTiles(x)(y).multiplier match {
+              case Multiplier.DOUBLE_LETTER => 2
+              case Multiplier.TRIPLE_LETTER => 3
+              case _ => 1
+            }) + startingCrossSumPoints
 
-        while (curr < boardTiles.length &&
-          boardTiles(curr)(y).tile.nonEmpty &&
-          Option(tmpTrie.children(boardTiles(curr)(y).tile.get.letter - 65)).nonEmpty) {
-          tmpTrie = tmpTrie.children(boardTiles(curr)(y).tile.get.letter - 65)
-          currPoints += TileUtilities.getTileScore(boardTiles(curr)(y).tile.get.letter)
-          curr += 1
-        }
+          while (curr < boardTiles.length &&
+            boardTiles(curr)(y).tile.nonEmpty &&
+            Option(tmpTrie.children(boardTiles(curr)(y).tile.get.letter - 65)).nonEmpty) {
+            tmpTrie = tmpTrie.children(boardTiles(curr)(y).tile.get.letter - 65)
+            currPoints += TileUtilities.getTileScore(boardTiles(curr)(y).tile.get.letter)
+            curr += 1
+          }
 
-        if ((curr == boardTiles.length || boardTiles(curr)(y).tile.isEmpty) && tmpTrie.isComplete) {
-          val char: Char = (i + 65).toChar
-          if (shouldDouble) currPoints *= 2
-          if (shouldTriple) currPoints *= 3
-          boardTiles(x)(y).verticalCrossChecks += char -> currPoints
+          if ((curr == boardTiles.length || boardTiles(curr)(y).tile.isEmpty) && tmpTrie.isComplete) {
+            val char: Char = (i + 65).toChar
+            if (shouldDouble) currPoints *= 2
+            if (shouldTriple) currPoints *= 3
+            boardTiles(x)(y).verticalCrossChecks += char -> currPoints
+          }
         }
       }
     }

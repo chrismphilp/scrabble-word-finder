@@ -140,4 +140,10 @@ object TileUtilities {
     new mutable.HashMap[Char, Int], false,
     false, false
   )
+
+  def FilledBoardTile(playerTile: PlayerTile): BoardTile = new BoardTile(
+    Some(playerTile), Multiplier.TRIPLE_WORD, new mutable.HashMap[Char, Int], false,
+    false, new mutable.HashMap[Char, Int], false,
+    false, false
+  )
 }

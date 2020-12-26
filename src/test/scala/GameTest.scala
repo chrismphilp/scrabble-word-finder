@@ -1,3 +1,4 @@
+import GameUtilities.initialiseBoard
 import TileUtilities._
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -8,7 +9,7 @@ class GameTest extends AnyFunSuite {
   val trie: Trie = FileProcessor.convertFileToTrie("collins-scrabble-words-2019.txt")
   val rack: Rack = new Rack(new ListBuffer[PlayerTile])
 
-  test("Should correctly find highest scoring word from single word") {
+  test("Should correctly find highest scoring word from single horizontal word") {
     val board: Board = new Board(Array(
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
@@ -40,7 +41,7 @@ class GameTest extends AnyFunSuite {
     assert(highestScoringWord.score === 42)
   }
 
-  test("Should correctly update Cross-Check tiles with multiple separated horizontal words") {
+  test("Should correctly find highest scoring word from multiple separated horizontal words") {
     val board: Board = new Board(Array(
       Array(
         new BoardTile(Option(G()), Multiplier.NONE, new mutable.HashMap[Char, Int], false,
@@ -88,7 +89,7 @@ class GameTest extends AnyFunSuite {
     assert(highestScoringWord.score === 27)
   }
 
-  test("Should correctly update Cross-Check tiles with single vertical word") {
+  test("Should correctly find highest scoring word from single vertical word") {
     val board: Board = new Board(Array(
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
       Array(
@@ -140,7 +141,7 @@ class GameTest extends AnyFunSuite {
     assert(highestScoringWord.score === 37)
   }
 
-  test("Should correctly update Cross-Check tiles with multiple vertical words") {
+  test("Should correctly find highest scoring word from multiple separated vertical words") {
     val board: Board = new Board(Array(
       Array(
         EmptyBoardTile(),
@@ -211,13 +212,95 @@ class GameTest extends AnyFunSuite {
     val board: Board = new Board(Array(), trie)
 
     rack.setRack(List(S(), P(), E(), A(), R(), E(), L()).to(ListBuffer))
-
     val game: Game = new Game(board, trie, rack)
     game.initializeGame()
-
-    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord()
+    var highestScoringWord: HighestScoringWord = game.findHighestScoringWord()
 
     assert(highestScoringWord.word === "RELAPSE")
     assert(highestScoringWord.score === 74)
+
+    rack.setRack(List(D(), E(), Y(), N(), O(), R(), T()).to(ListBuffer))
+    game.initializeGame()
+    highestScoringWord = game.findHighestScoringWord()
+
+    assert(highestScoringWord.word === "RODNEY")
+    assert(highestScoringWord.score === 28)
+
+    rack.setRack(List(Z(), E(), L(), N(), O(), R(), S()).to(ListBuffer))
+    game.initializeGame()
+    highestScoringWord = game.findHighestScoringWord()
+
+    assert(highestScoringWord.word === "ZONERS")
+    assert(highestScoringWord.score === 50)
+  }
+
+  test("Should correctly simulate highest scoring word for each tile placed") {
+
+    val board: Board = new Board(initialiseBoard(), trie)
+
+    board.boardTiles(4)(4) = FilledBoardTile(M())
+    board.boardTiles(4)(5) = FilledBoardTile(I())
+    board.boardTiles(4)(6) = FilledBoardTile(R())
+    board.boardTiles(4)(7) = FilledBoardTile(T())
+    board.boardTiles(4)(8) = FilledBoardTile(H())
+
+    board.boardTiles(4)(8) = FilledBoardTile(H())
+    board.boardTiles(5)(8) = FilledBoardTile(E())
+    board.boardTiles(6)(8) = FilledBoardTile(A())
+    board.boardTiles(7)(8) = FilledBoardTile(T())
+    board.boardTiles(8)(8) = FilledBoardTile(E())
+    board.boardTiles(9)(8) = FilledBoardTile(D())
+
+    board.boardTiles(7)(5) = FilledBoardTile(D())
+    board.boardTiles(7)(6) = FilledBoardTile(E())
+    board.boardTiles(7)(7) = FilledBoardTile(A())
+    board.boardTiles(7)(8) = FilledBoardTile(T())
+    board.boardTiles(7)(9) = FilledBoardTile(H())
+
+    rack.setRack(List(S(), P(), E(), A(), R(), E(), L()).to(ListBuffer))
+    var game: Game = new Game(board, trie, rack)
+    game.updateBoard()
+
+    var highestScoringWord: HighestScoringWord = game.findHighestScoringWord()
+
+    assert(highestScoringWord.word === "PRESALE")
+    assert(highestScoringWord.score === 96)
+
+    board.boardTiles(1)(5) = FilledBoardTile(S())
+    board.boardTiles(2)(5) = FilledBoardTile(P())
+    board.boardTiles(3)(5) = FilledBoardTile(O())
+    board.boardTiles(4)(5) = FilledBoardTile(I())
+    board.boardTiles(5)(5) = FilledBoardTile(L())
+    board.boardTiles(6)(5) = FilledBoardTile(E())
+    board.boardTiles(7)(5) = FilledBoardTile(D())
+
+    board.boardTiles(5)(10) = FilledBoardTile(M())
+    board.boardTiles(6)(10) = FilledBoardTile(I())
+    board.boardTiles(7)(10) = FilledBoardTile(S())
+    board.boardTiles(8)(10) = FilledBoardTile(S())
+
+    game = new Game(board, trie, rack)
+    game.updateBoard()
+    highestScoringWord = game.findHighestScoringWord()
+
+    assert(highestScoringWord.word === "PLEASERS")
+    assert(highestScoringWord.score === 70)
+
+    board.boardTiles(1)(1) = FilledBoardTile(P())
+    board.boardTiles(1)(2) = FilledBoardTile(L())
+    board.boardTiles(1)(3) = FilledBoardTile(E())
+    board.boardTiles(1)(4) = FilledBoardTile(A())
+    board.boardTiles(1)(5) = FilledBoardTile(S())
+    board.boardTiles(1)(6) = FilledBoardTile(E())
+    board.boardTiles(1)(7) = FilledBoardTile(R())
+    board.boardTiles(1)(8) = FilledBoardTile(S())
+
+    rack.setRack(List(Q(), U(), O(), T(), E(), D(), U()).to(ListBuffer))
+    game = new Game(board, trie, rack)
+    game.updateBoard()
+    highestScoringWord = game.findHighestScoringWord()
+
+    assert(highestScoringWord.word === "QUOTED")
+    assert(highestScoringWord.score === 39)
   }
 }
