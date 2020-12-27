@@ -339,12 +339,15 @@ class GameTest extends AnyFunSuite {
     val board: Board = new Board(initialiseBoard(), trie)
     val game: Game = new Game(board, trie, rack, bag)
     game.updateRack()
+    rack.printRack()
     game.placeHighestScoringWord(game.findHighestScoringWord(true))
     game.updateRack()
+    game.printBoard()
 
     while (rack.tiles.nonEmpty) {
       game.updateBoard()
       val highestScoringWord = game.findHighestScoringWord(false)
+      rack.printRack()
       game.placeHighestScoringWord(highestScoringWord)
       game.updateRack()
       game.printBoard()

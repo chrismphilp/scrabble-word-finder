@@ -59,7 +59,7 @@ object TileUtilities {
     for (_ <- 0 until 1) buffer += X()
     for (_ <- 0 until 2) buffer += Y()
     for (_ <- 0 until 1) buffer += Z()
-    for (_ <- 0 until 2) buffer += Blank()
+//    for (_ <- 0 until 2) buffer += Blank()
     new Bag(buffer)
   }
 

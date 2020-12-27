@@ -43,12 +43,13 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
             while (startingPoint > 0 && !board.boardTiles(x)(startingPoint - 1).isAnchor) {
               startingPoint -= 1
             }
+            var initY = startingPoint
             while (startingPoint != y) {
               startingTrie = startingTrie.children(board.boardTiles(x)(startingPoint).tile.get.letter - 65)
               wordPoints += TileUtilities.getTileScore(board.boardTiles(x)(startingPoint).tile.get.letter)
               startingPoint += 1
             }
-            extendRight(x, y, x, y, rack.tiles, startingTrie, wordPoints,
+            extendRight(x, initY, x, y, rack.tiles, startingTrie, wordPoints,
               0, rack.tiles.length, new ListBuffer[Multiplier.Value], hasJoined = true)
           } else if (!boardTile.requiresLeftCrossCheck) {
             var startingPoint = y
@@ -69,12 +70,13 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
             while (startingPoint > 0 && !board.boardTiles(startingPoint - 1)(y).isAnchor) {
               startingPoint -= 1
             }
+            var initX = startingPoint
             while (startingPoint != x) {
               startingTrie = startingTrie.children(board.boardTiles(startingPoint)(y).tile.get.letter - 65)
               wordPoints += TileUtilities.getTileScore(board.boardTiles(startingPoint)(y).tile.get.letter)
               startingPoint += 1
             }
-            extendBelow(x, y, x, y, rack.tiles, startingTrie, wordPoints,
+            extendBelow(initX, y, x, y, rack.tiles, startingTrie, wordPoints,
               0, rack.tiles.length, new ListBuffer[Multiplier.Value], hasJoined = true)
           } else if (!boardTile.requiresAboveCrossCheck) {
             var startingPoint = x
@@ -258,6 +260,8 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
   }
 
   def placeHighestScoringWord(highestScoringWord: HighestScoringWord): Unit = {
+    println("Placing " + highestScoringWord.direction + " word: " + highestScoringWord.word +
+      " at: " + highestScoringWord.x + "," + highestScoringWord.y + " for " + highestScoringWord.score)
     val newTiles: ListBuffer[PlayerTile] = rack.tiles.clone()
 
     if (highestScoringWord.direction.equals(Direction.HORIZONTAL)) {
@@ -288,6 +292,14 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
   }
 
   def printBoard(): Unit = {
+    println("-------------------------------------------")
+    board.boardTiles.foreach(row => printBoardRow(row))
+    println("-------------------------------------------")
+  }
 
+  def printBoardRow(boardTile: Array[BoardTile]): Unit = {
+    println(boardTile.map(tile => Console.BLUE + "|" +
+      (if (tile.tile.nonEmpty) tile.tile.get.letter else ' ')
+      + "|").mkString(" "))
   }
 }
