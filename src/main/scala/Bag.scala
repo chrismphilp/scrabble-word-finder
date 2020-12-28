@@ -6,7 +6,8 @@ class Bag(var tiles: ListBuffer[PlayerTile]) {
     if (tiles.isEmpty) List.empty
     else {
       var list: ListBuffer[PlayerTile] = new ListBuffer[PlayerTile]()
-      for (_ <- 0 until numberOfTiles) {
+      val tilesToDraw: Int = if (numberOfTiles > tiles.length) tiles.length else numberOfTiles
+      for (_ <- 0 until tilesToDraw) {
         val index: Int = Random.nextInt(tiles.size)
         val tile: PlayerTile = tiles.remove(index)
         list += tile

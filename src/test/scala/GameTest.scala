@@ -301,7 +301,6 @@ class GameTest extends AnyFunSuite {
     game.updateBoard()
     highestScoringWord = game.findHighestScoringWord(false)
 
-    game.printBoard()
     assert(highestScoringWord.word === "QUOTED")
     assert(highestScoringWord.score === 39)
 
