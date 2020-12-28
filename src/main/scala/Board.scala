@@ -101,7 +101,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
       for (i <- 0 until 26) {
         var tmpTrie = startingTrie.children(i)
 
-        if (tmpTrie != null) {
+        if (Option(tmpTrie).nonEmpty) {
           var curr = startingPoint
 
           var currPoints = TileUtilities.getTileScore(tmpTrie.value) *
@@ -121,6 +121,12 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
           if ((curr == boardTiles.length || boardTiles(x)(curr).tile.isEmpty) && tmpTrie.isComplete) {
             val char: Char = (i + 65).toChar
+            if (!boardTiles(x)(y).horizontalCrossChecks.contains(' ')) {
+              var withBlankScore: Int = currPoints - TileUtilities.getTileScore(char)
+              if (shouldDouble) withBlankScore *= 2
+              if (shouldTriple) withBlankScore *= 3
+              boardTiles(x)(y).horizontalCrossChecks += ' ' -> withBlankScore
+            }
             if (shouldDouble) currPoints *= 2
             if (shouldTriple) currPoints *= 3
             boardTiles(x)(y).horizontalCrossChecks += char -> currPoints
@@ -182,6 +188,12 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
 
           if ((curr == boardTiles.length || boardTiles(curr)(y).tile.isEmpty) && tmpTrie.isComplete) {
             val char: Char = (i + 65).toChar
+            if (!boardTiles(x)(y).verticalCrossChecks.contains(' ')) {
+              var withBlankScore: Int = currPoints - TileUtilities.getTileScore(char)
+              if (shouldDouble) withBlankScore *= 2
+              if (shouldTriple) withBlankScore *= 3
+              boardTiles(x)(y).verticalCrossChecks += ' ' -> withBlankScore
+            }
             if (shouldDouble) currPoints *= 2
             if (shouldTriple) currPoints *= 3
             boardTiles(x)(y).verticalCrossChecks += char -> currPoints
