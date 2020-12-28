@@ -43,14 +43,14 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
             while (startingPoint > 0 && !board.boardTiles(x)(startingPoint - 1).isAnchor) {
               startingPoint -= 1
             }
-            var initY = startingPoint
+            val initY = startingPoint
             while (startingPoint != y) {
               startingTrie = startingTrie.children(board.boardTiles(x)(startingPoint).tile.get.letter - 65)
               wordPoints += TileUtilities.getTileScore(board.boardTiles(x)(startingPoint).tile.get.letter)
               startingPoint += 1
             }
-            extendRight(x, initY, x, y, rack.tiles, startingTrie, wordPoints,
-              0, rack.tiles.length, new ListBuffer[Multiplier.Value], hasJoined = true)
+            updatedExtendRight(x, initY, x, y, rack.tiles, startingTrie, wordPoints,
+              0, rack.tiles.length, new ListBuffer[Multiplier.Value], 0)
           } else if (!boardTile.requiresLeftCrossCheck) {
             var startingPoint = y
             var startingLimit = 0
@@ -59,7 +59,8 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
               startingPoint -= 1
               startingLimit += 1
             }
-            extendLeft(x, y, x, y, rack.tiles, startingLimit, trie, 0, isStartingWord)
+            extendLeft(x, y, x, y, rack.tiles, startingLimit, 0, trie,
+              0, isStartingWord)
           }
 
           // Vertical words
@@ -70,14 +71,14 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
             while (startingPoint > 0 && !board.boardTiles(startingPoint - 1)(y).isAnchor) {
               startingPoint -= 1
             }
-            var initX = startingPoint
+            val initX = startingPoint
             while (startingPoint != x) {
               startingTrie = startingTrie.children(board.boardTiles(startingPoint)(y).tile.get.letter - 65)
               wordPoints += TileUtilities.getTileScore(board.boardTiles(startingPoint)(y).tile.get.letter)
               startingPoint += 1
             }
-            extendBelow(initX, y, x, y, rack.tiles, startingTrie, wordPoints,
-              0, rack.tiles.length, new ListBuffer[Multiplier.Value], hasJoined = true)
+            updatedExtendBelow(initX, y, x, y, rack.tiles, startingTrie, wordPoints,
+              0, rack.tiles.length, new ListBuffer[Multiplier.Value], 0)
           } else if (!boardTile.requiresAboveCrossCheck) {
             var startingPoint = x
             var startingLimit = 0
@@ -87,7 +88,8 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
               startingPoint -= 1
               startingLimit += 1
             }
-            extendAbove(x, y, x, y, rack.tiles, startingLimit, trie, 0, isStartingWord)
+            extendAbove(x, y, x, y, rack.tiles, startingLimit, 0,
+              trie, 0, isStartingWord)
           }
         }
       }
@@ -95,148 +97,172 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
 
     @tailrec
     def extendLeft(initX: Int, initY: Int, currX: Int, currY: Int, letters: ListBuffer[PlayerTile],
-                   limit: Int, currTrie: Trie, currPoints: Int, isStartingWord: Boolean): Unit = {
+                   limit: Int, distanceFromOrigin: Int, currTrie: Trie, currPoints: Int,
+                   isStartingWord: Boolean): Unit = {
 
-      extendRight(initX, initY, currX, currY, letters, currTrie, currPoints,
-        0, letters.length, new ListBuffer[Multiplier.Value], isStartingWord)
+      updatedExtendRight(initX, initY, currX, currY, letters, currTrie, currPoints,
+        0, letters.length, new ListBuffer[Multiplier.Value],
+        if (isStartingWord) 0 else distanceFromOrigin)
       if (limit > 0) {
-        extendLeft(initX, initY - 1, currX, currY - 1, letters, limit - 1,
+        extendLeft(initX, initY - 1, currX, currY - 1, letters, limit - 1, distanceFromOrigin + 1,
           currTrie, currPoints, isStartingWord)
       }
     }
 
-    def extendRight(initX: Int, initY: Int, currX: Int, currY: Int, letters: ListBuffer[PlayerTile],
-                    currTrie: Trie, currPoints: Int, crossCheckPoints: Int, initialRackSize: Int,
-                    bonuses: ListBuffer[Multiplier.Value], hasJoined: Boolean): Unit = {
+    def updatedExtendRight(initX: Int, initY: Int, currX: Int, currY: Int, letters: ListBuffer[PlayerTile],
+                           currTrie: Trie, currPoints: Int, crossCheckPoints: Int, initialRackSize: Int,
+                           bonuses: ListBuffer[Multiplier.Value], limitNumber: Int): Unit = {
+      if (Option(currTrie).nonEmpty) {
 
-      val totalPoints = currentPoints(currPoints, bonuses) + crossCheckPoints +
-        (if (initialRackSize == 7 && letters.isEmpty) 50 else 0)
-      var tmpBonuses: ListBuffer[Multiplier.Value] = bonuses.clone()
+        val totalPoints = currentPoints(currPoints, bonuses) + crossCheckPoints +
+          (if (initialRackSize == 7 && letters.isEmpty) 50 else 0)
+        var tmpBonuses: ListBuffer[Multiplier.Value] = bonuses.clone()
 
-      if (Option(currTrie).nonEmpty && currY < board.boardTiles.length) {
-        val boardTile: BoardTile = board.boardTiles(currX)(currY)
-
-        if (boardTile.tile.isEmpty) {
-
-          if (hasJoined && currTrie.isComplete && totalPoints > highestScoringWord.score) {
+        if (currY == board.boardTiles.length) {
+          if (currTrie.isComplete && totalPoints > highestScoringWord.score) {
             setHighestScoringWord(highestScoringWord, currTrie.completedWord, totalPoints, crossCheckPoints,
               initX, initY, Direction.HORIZONTAL)
           }
+        } else {
+          val boardTile: BoardTile = board.boardTiles(currX)(currY)
 
-          boardTile.multiplier match {
-            case Multiplier.DOUBLE_WORD => tmpBonuses += boardTile.multiplier
-            case Multiplier.TRIPLE_WORD => tmpBonuses += boardTile.multiplier
-            case _ =>
-          }
-
-          for (tileIndex <- letters.indices) {
-            val rackTile: PlayerTile = letters(tileIndex)
-            val newTrie: Trie = currTrie.children(rackTile.letter - 65)
-            val newLetters = letters.clone()
-            newLetters.remove(tileIndex)
-            var tileScore: Int = 0
-            var crossCheckScore: Int = 0
-
-            if (!boardTile.requiresAboveCrossCheck && !boardTile.requiresBelowCrossCheck) {
-              tileScore = TileUtilities.getTileScore(rackTile.letter) *
-                TileUtilities.getTileMultiplierValue(boardTile.multiplier)
-              extendRight(initX, initY, currX, currY + 1, newLetters, newTrie,
-                currPoints + tileScore, crossCheckPoints + crossCheckScore,
-                initialRackSize, tmpBonuses, hasJoined || hasJoinedToWord(boardTile))
-            } else if (boardTile.verticalCrossChecks.contains(rackTile.letter) &&
-              Option(currTrie.children(rackTile.letter - 65)).nonEmpty) {
-              tileScore = TileUtilities.getTileScore(rackTile.letter) *
-                TileUtilities.getTileMultiplierValue(boardTile.multiplier)
-              crossCheckScore = boardTile.verticalCrossChecks(rackTile.letter)
-              extendRight(initX, initY, currX, currY + 1, newLetters, newTrie,
-                currPoints + tileScore, crossCheckPoints + crossCheckScore,
-                initialRackSize, tmpBonuses, hasJoined = true)
+          if (boardTile.tile.isEmpty) {
+            if (limitNumber < 0 && letters.length < initialRackSize &&
+              currTrie.isComplete &&
+              totalPoints > highestScoringWord.score) {
+              setHighestScoringWord(highestScoringWord, currTrie.completedWord, totalPoints, crossCheckPoints,
+                initX, initY, Direction.HORIZONTAL)
             }
+
+            boardTile.multiplier match {
+              case Multiplier.DOUBLE_WORD => tmpBonuses += boardTile.multiplier
+              case Multiplier.TRIPLE_WORD => tmpBonuses += boardTile.multiplier
+              case _ =>
+            }
+
+            for (tileIndex <- letters.indices) {
+              val rackTile: PlayerTile = letters(tileIndex)
+              var tileScore: Int = 0
+              var crossCheckScore: Int = 0
+
+              val newTrie: Trie = currTrie.children(rackTile.letter - 65)
+              val newLetters = letters.clone()
+
+              newLetters.remove(tileIndex)
+
+              if (!boardTile.requiresAboveCrossCheck && !boardTile.requiresBelowCrossCheck) {
+                tileScore = TileUtilities.getTileScore(rackTile.letter) *
+                  TileUtilities.getTileMultiplierValue(boardTile.multiplier)
+                updatedExtendRight(initX, initY, currX, currY + 1, newLetters, newTrie,
+                  currPoints + tileScore, crossCheckPoints + crossCheckScore,
+                  initialRackSize, tmpBonuses, limitNumber - 1)
+              } else if (boardTile.verticalCrossChecks.contains(rackTile.letter) &&
+                Option(currTrie.children(rackTile.letter - 65)).nonEmpty) {
+                tileScore = TileUtilities.getTileScore(rackTile.letter) *
+                  TileUtilities.getTileMultiplierValue(boardTile.multiplier)
+                crossCheckScore = boardTile.verticalCrossChecks(rackTile.letter)
+                updatedExtendRight(initX, initY, currX, currY + 1, newLetters, newTrie,
+                  currPoints + tileScore, crossCheckPoints + crossCheckScore,
+                  initialRackSize, tmpBonuses, limitNumber - 1)
+              }
+            }
+          } else if (Option(currTrie.children(boardTile.tile.get.letter - 65)).nonEmpty) {
+            val newTrie: Trie = currTrie.children(boardTile.tile.get.letter - 65)
+            val tileScore: Int = TileUtilities.getTileScore(boardTile.tile.get.letter)
+            updatedExtendRight(initX, initY, currX, currY + 1, letters, newTrie,
+              currPoints + tileScore, crossCheckPoints, initialRackSize, tmpBonuses, limitNumber - 1)
           }
-        } else if (Option(currTrie.children(boardTile.tile.get.letter - 65)).nonEmpty) {
-          val newTrie: Trie = currTrie.children(boardTile.tile.get.letter - 65)
-          val tileScore: Int = TileUtilities.getTileScore(boardTile.tile.get.letter)
-          extendRight(initX, initY, currX, currY + 1, letters, newTrie,
-            currPoints + tileScore, crossCheckPoints, initialRackSize, tmpBonuses,
-            hasJoined = true)
         }
-      } else if (hasJoined && Option(currTrie).nonEmpty && currTrie.isComplete &&
-        totalPoints > highestScoringWord.score) {
-        setHighestScoringWord(highestScoringWord, currTrie.completedWord, totalPoints, crossCheckPoints,
-          initX, initY, Direction.HORIZONTAL)
       }
     }
 
+    /*
+    Extend right potential criteria:-
+      - Make sure limit number is reached to ensure back at the original tile
+      - Trie must not be null
+    Extend right scenarios:-
+      - Tile is empty
+        - Place tiles that continue trie to right, ensuring that the tile fulfills vertical crossChecks
+        - Move on until
+      - Tile is not empty
+        - Continue trie on to next tile
+     */
     @tailrec
     def extendAbove(initX: Int, initY: Int, currX: Int, currY: Int, letters: ListBuffer[PlayerTile],
-                    limit: Int, currTrie: Trie, currPoints: Int, isStartingWord: Boolean): Unit = {
+                    limit: Int, distanceFromOrigin: Int, currTrie: Trie, currPoints: Int,
+                    isStartingWord: Boolean): Unit = {
 
-      extendBelow(initX, initY, currX, currY, letters, currTrie, currPoints,
-        0, letters.length, new ListBuffer[Multiplier.Value], isStartingWord)
+      updatedExtendBelow(initX, initY, currX, currY, letters, currTrie, currPoints,
+        0, letters.length, new ListBuffer[Multiplier.Value], distanceFromOrigin)
       if (limit > 0) {
-        extendAbove(initX - 1, initY, currX - 1, currY, letters, limit - 1,
+        extendAbove(initX - 1, initY, currX - 1, currY, letters, limit - 1, distanceFromOrigin + 1,
           currTrie, currPoints, isStartingWord)
       }
     }
 
-    def extendBelow(initX: Int, initY: Int, currX: Int, currY: Int, letters: ListBuffer[PlayerTile],
-                    currTrie: Trie, currPoints: Int, crossCheckPoints: Int, initialRackSize: Int,
-                    bonuses: ListBuffer[Multiplier.Value], hasJoined: Boolean): Unit = {
+    def updatedExtendBelow(initX: Int, initY: Int, currX: Int, currY: Int, letters: ListBuffer[PlayerTile],
+                           currTrie: Trie, currPoints: Int, crossCheckPoints: Int, initialRackSize: Int,
+                           bonuses: ListBuffer[Multiplier.Value], limitNumber: Int): Unit = {
+      if (Option(currTrie).nonEmpty) {
+        val totalPoints = currentPoints(currPoints, bonuses) + crossCheckPoints +
+          (if (initialRackSize == 7 && letters.isEmpty) 50 else 0)
+        var tmpBonuses: ListBuffer[Multiplier.Value] = bonuses.clone()
 
-      val totalPoints = currentPoints(currPoints, bonuses) + crossCheckPoints +
-        (if (initialRackSize == 7 && letters.isEmpty) 50 else 0)
-      var tmpBonuses: ListBuffer[Multiplier.Value] = bonuses.clone()
-
-      if (Option(currTrie).nonEmpty && currX < board.boardTiles.length) {
-        val boardTile: BoardTile = board.boardTiles(currX)(currY)
-
-        if (boardTile.tile.isEmpty) {
-
-          if (hasJoined && currTrie.isComplete && totalPoints > highestScoringWord.score) {
+        if (currX == board.boardTiles.length) {
+          if (currTrie.isComplete && totalPoints > highestScoringWord.score) {
             setHighestScoringWord(highestScoringWord, currTrie.completedWord, totalPoints, crossCheckPoints,
               initX, initY, Direction.VERTICAL)
           }
+        } else {
+          val boardTile: BoardTile = board.boardTiles(currX)(currY)
 
-          boardTile.multiplier match {
-            case Multiplier.DOUBLE_WORD => tmpBonuses += boardTile.multiplier
-            case Multiplier.TRIPLE_WORD => tmpBonuses += boardTile.multiplier
-            case _ =>
-          }
-
-          for (tileIndex <- letters.indices) {
-            val rackTile: PlayerTile = letters(tileIndex)
-            val newTrie: Trie = currTrie.children(rackTile.letter - 65)
-            val newLetters = letters.clone()
-            newLetters.remove(tileIndex)
-            var tileScore: Int = 0
-            var crossCheckScore: Int = 0
-
-            if (!boardTile.requiresLeftCrossCheck && !boardTile.requiresRightCrossCheck) {
-              tileScore = TileUtilities.getTileScore(rackTile.letter) *
-                TileUtilities.getTileMultiplierValue(boardTile.multiplier)
-              extendBelow(initX, initY, currX + 1, currY, newLetters, newTrie,
-                currPoints + tileScore, crossCheckPoints + crossCheckScore, initialRackSize, tmpBonuses,
-                hasJoined || hasJoinedToWord(boardTile))
-            } else if (boardTile.horizontalCrossChecks.contains(rackTile.letter) &&
-              Option(currTrie.children(rackTile.letter - 65)).nonEmpty) {
-              tileScore = TileUtilities.getTileScore(rackTile.letter) *
-                TileUtilities.getTileMultiplierValue(boardTile.multiplier)
-              crossCheckScore = boardTile.horizontalCrossChecks(rackTile.letter)
-              extendBelow(initX, initY, currX + 1, currY, newLetters, newTrie,
-                currPoints + tileScore, crossCheckPoints + crossCheckScore, initialRackSize, tmpBonuses,
-                hasJoined = true)
+          if (boardTile.tile.isEmpty) {
+            if (limitNumber < 0 && letters.length < initialRackSize &&
+              currTrie.isComplete &&
+              totalPoints > highestScoringWord.score) {
+              setHighestScoringWord(highestScoringWord, currTrie.completedWord, totalPoints, crossCheckPoints,
+                initX, initY, Direction.VERTICAL)
             }
+
+            boardTile.multiplier match {
+              case Multiplier.DOUBLE_WORD => tmpBonuses += boardTile.multiplier
+              case Multiplier.TRIPLE_WORD => tmpBonuses += boardTile.multiplier
+              case _ =>
+            }
+
+            for (tileIndex <- letters.indices) {
+              val rackTile: PlayerTile = letters(tileIndex)
+              var tileScore: Int = 0
+              var crossCheckScore: Int = 0
+
+              val newTrie: Trie = currTrie.children(rackTile.letter - 65)
+              val newLetters = letters.clone()
+
+              newLetters.remove(tileIndex)
+
+              if (!boardTile.requiresLeftCrossCheck && !boardTile.requiresRightCrossCheck) {
+                tileScore = TileUtilities.getTileScore(rackTile.letter) *
+                  TileUtilities.getTileMultiplierValue(boardTile.multiplier)
+                updatedExtendBelow(initX, initY, currX + 1, currY, newLetters, newTrie,
+                  currPoints + tileScore, crossCheckPoints + crossCheckScore,
+                  initialRackSize, tmpBonuses, limitNumber - 1)
+              } else if (boardTile.horizontalCrossChecks.contains(rackTile.letter) &&
+                Option(currTrie.children(rackTile.letter - 65)).nonEmpty) {
+                tileScore = TileUtilities.getTileScore(rackTile.letter) *
+                  TileUtilities.getTileMultiplierValue(boardTile.multiplier)
+                crossCheckScore = boardTile.horizontalCrossChecks(rackTile.letter)
+                updatedExtendBelow(initX, initY, currX + 1, currY, newLetters, newTrie,
+                  currPoints + tileScore, crossCheckPoints + crossCheckScore,
+                  initialRackSize, tmpBonuses, limitNumber - 1)
+              }
+            }
+          } else if (Option(currTrie.children(boardTile.tile.get.letter - 65)).nonEmpty) {
+            val newTrie: Trie = currTrie.children(boardTile.tile.get.letter - 65)
+            val tileScore: Int = TileUtilities.getTileScore(boardTile.tile.get.letter)
+            updatedExtendBelow(initX, initY, currX + 1, currY, letters, newTrie,
+              currPoints + tileScore, crossCheckPoints, initialRackSize, tmpBonuses, limitNumber - 1)
           }
-        } else if (Option(currTrie.children(boardTile.tile.get.letter - 65)).nonEmpty) {
-          val newTrie: Trie = currTrie.children(boardTile.tile.get.letter - 65)
-          val tileScore: Int = TileUtilities.getTileScore(boardTile.tile.get.letter)
-          extendBelow(initX, initY, currX + 1, currY, letters, newTrie, crossCheckPoints,
-            currPoints + tileScore, initialRackSize, tmpBonuses, hasJoined = true)
         }
-      } else if (hasJoined && Option(currTrie).nonEmpty && currTrie.isComplete &&
-        totalPoints > highestScoringWord.score) {
-        setHighestScoringWord(highestScoringWord, currTrie.completedWord, totalPoints, crossCheckPoints,
-          initX, initY, Direction.VERTICAL)
       }
     }
 

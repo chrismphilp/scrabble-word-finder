@@ -301,6 +301,7 @@ class GameTest extends AnyFunSuite {
     game.updateBoard()
     highestScoringWord = game.findHighestScoringWord(false)
 
+    game.printBoard()
     assert(highestScoringWord.word === "QUOTED")
     assert(highestScoringWord.score === 39)
 
@@ -329,7 +330,11 @@ class GameTest extends AnyFunSuite {
     game.updateBoard()
     highestScoringWord = game.findHighestScoringWord(false)
 
-    assert(highestScoringWord.word === "VIBEY")
+    game.printBoard()
+
+    assert(board.boardTiles(6)(6).verticalCrossChecks.contains('Y') === true)
+
+    assert(highestScoringWord.word === "BEVY")
     assert(highestScoringWord.score === 30)
   }
 
@@ -347,6 +352,7 @@ class GameTest extends AnyFunSuite {
     while (rack.tiles.nonEmpty) {
       game.updateBoard()
       val highestScoringWord = game.findHighestScoringWord(false)
+      if (highestScoringWord.word === "") rack.tiles = ListBuffer.empty
       rack.printRack()
       game.placeHighestScoringWord(highestScoringWord)
       game.updateRack()

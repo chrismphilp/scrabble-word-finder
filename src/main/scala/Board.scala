@@ -5,10 +5,22 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
   def updateBoard(): Unit = {
     for (x <- boardTiles.indices) {
       for (y <- boardTiles(x).indices) {
+        resetTile(x, y)
         updateAnchorTile(x, y)
         updateCrossCheckTile(x, y)
       }
     }
+  }
+
+  def resetTile(x: Int, y: Int): Unit = {
+    val boardTile: BoardTile = boardTiles(x)(y)
+    boardTile.isAnchor = false
+    boardTile.requiresAboveCrossCheck = false
+    boardTile.requiresBelowCrossCheck = false
+    boardTile.requiresRightCrossCheck = false
+    boardTile.requiresLeftCrossCheck = false
+    boardTile.horizontalCrossChecks = mutable.HashMap.empty
+    boardTile.verticalCrossChecks = mutable.HashMap.empty
   }
 
   def updateAnchorTile(x: Int, y: Int): Unit = {
@@ -21,12 +33,6 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
       boardTile.requiresLeftCrossCheck = isLeftCrossCheckRequired(x, y)
       boardTile.isAnchor = boardTile.requiresLeftCrossCheck || boardTile.requiresRightCrossCheck ||
         boardTile.requiresAboveCrossCheck || boardTile.requiresBelowCrossCheck
-    } else {
-      boardTile.isAnchor = false
-      boardTile.requiresAboveCrossCheck = false
-      boardTile.requiresBelowCrossCheck = false
-      boardTile.requiresRightCrossCheck = false
-      boardTile.requiresLeftCrossCheck = false
     }
   }
 
@@ -59,9 +65,6 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
       if (boardTile.requiresRightCrossCheck || boardTile.requiresLeftCrossCheck) {
         updateHorizontalCrossChecks(x, y)
       }
-    } else {
-      boardTile.horizontalCrossChecks = new mutable.HashMap[Char, Int]
-      boardTile.verticalCrossChecks = new mutable.HashMap[Char, Int]
     }
   }
 
