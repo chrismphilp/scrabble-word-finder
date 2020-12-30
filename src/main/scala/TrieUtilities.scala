@@ -44,10 +44,8 @@ object TrieUtilities {
           for (y <- List.range(0, 26)) {
             if (Option(curr.children(y)).nonEmpty) findWords(curr.children(y), tmpBuffer)
           }
-        } else {
-          if (Option(curr.children(tile.letter - 65)).nonEmpty) {
-            findWords(curr.children(tile.letter - 65), tmpBuffer)
-          }
+        } else if (Option(curr.children(tile.letter - 65)).nonEmpty) {
+          findWords(curr.children(tile.letter - 65), tmpBuffer)
         }
       }
     }
@@ -77,67 +75,13 @@ object TrieUtilities {
                 findLongestWord(curr.children(y), tmpBuffer, step + 1)
               }
             }
-          } else {
-            if (Option(curr.children(tile.letter - 65)).nonEmpty) {
-              findLongestWord(curr.children(tile.letter - 65), tmpBuffer, step + 1)
-            }
+          } else if (Option(curr.children(tile.letter - 65)).nonEmpty) {
+            findLongestWord(curr.children(tile.letter - 65), tmpBuffer, step + 1)
           }
         }
       }
     }
 
     longestWord
-  }
-
-  def findHighestScoringInitialWord(trie: Trie, tiles: ListBuffer[PlayerTile]): (String, Int) = {
-    var highestScoringWord: String = "N/A"
-    var wordScore: Int = 0
-
-    findHighestScoringWord(
-      trie,
-      List.range(0, tiles.length).to(ListBuffer),
-      0,
-      tiles.map(_.score).sum
-    )
-
-    def findHighestScoringWord(curr: Trie, list: ListBuffer[Int],
-                               currentScore: Int, remainingPoints: Int): Unit = {
-      if (curr.completedWord.length > 0 && currentScore > wordScore) {
-        highestScoringWord = curr.completedWord
-        wordScore = currentScore
-      }
-
-      if ((currentScore + remainingPoints) > wordScore) {
-        for (x <- list.indices) {
-          val tmpBuffer = list.clone()
-          val tile: PlayerTile = tiles(list(x))
-          tmpBuffer.remove(x)
-
-          if (tile.score == 0) {
-            for (y <- List.range(0, 26)) {
-              if (Option(curr.children(y)).nonEmpty) {
-                val newScore: Int =
-                  if (tmpBuffer.isEmpty && tiles.length == 7) currentScore + 50
-                  else currentScore
-
-                findHighestScoringWord(curr.children(y), tmpBuffer, newScore, remainingPoints)
-              }
-            }
-          } else {
-            if (Option(curr.children(tile.letter - 65)).nonEmpty) {
-              val newScore: Int = currentScore + tile.score
-              findHighestScoringWord(
-                curr.children(tile.letter - 65),
-                tmpBuffer,
-                if (tmpBuffer.isEmpty && tiles.length == 7) newScore + 50 else newScore,
-                remainingPoints - tile.score
-              )
-            }
-          }
-        }
-      }
-    }
-
-    (highestScoringWord, wordScore)
   }
 }

@@ -24,6 +24,58 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
 
   def updateRack(): Unit = rack.fillRack(bag)
 
+  @tailrec
+  final def findStartingLeftHorizontalNonAnchorTile(x: Int, y: Int): Int = (x, y) match {
+    case (x, y) if board.boardTiles(x)(y).isAnchor => y + 1
+    case (_, 0) => 0
+    case (x, y) => findStartingLeftHorizontalNonAnchorTile(x, y - 1)
+  }
+
+  @tailrec
+  final def updateHorizontalStartingTrie(x: Int, y: Int, targetY: Int, tmpTrie: Trie,
+                                         wordPoints: Int): (Trie, Int) = {
+    if (y == targetY) (tmpTrie, wordPoints)
+    else {
+      updateHorizontalStartingTrie(x, y + 1, targetY,
+        tmpTrie.children(board.boardTiles(x)(y).tile.get.letter - 65),
+        wordPoints + TileUtilities.getTileScore(board.boardTiles(x)(y).tile.get.letter))
+    }
+  }
+
+  @tailrec
+  final def findHorizontalLimit(x: Int, y: Int, limit: Int): Int = (x, y, limit) match {
+    case (_, 0, _) => limit
+    case (_, _, limit) if limit == rack.tiles.length - 1 => limit
+    case (x, y, limit) if board.boardTiles(x)(y - 1).isAnchor => limit
+    case (x, y, limit) => findHorizontalLimit(x, y - 1, limit + 1)
+  }
+
+  @tailrec
+  final def findStartingAboveVerticalNonAnchorTile(x: Int, y: Int): Int = (x, y) match {
+    case (x, y) if board.boardTiles(x)(y).isAnchor => x + 1
+    case (0, _) => 0
+    case (x, y) => findStartingAboveVerticalNonAnchorTile(x - 1, y)
+  }
+
+  @tailrec
+  final def updateVerticalStartingTrie(x: Int, y: Int, targetX: Int, tmpTrie: Trie,
+                                       wordPoints: Int): (Trie, Int) = {
+    if (x == targetX) (tmpTrie, wordPoints)
+    else {
+      updateVerticalStartingTrie(x + 1, y, targetX,
+        tmpTrie.children(board.boardTiles(x)(y).tile.get.letter - 65),
+        wordPoints + TileUtilities.getTileScore(board.boardTiles(x)(y).tile.get.letter))
+    }
+  }
+
+  @tailrec
+  final def findVerticalLimit(x: Int, y: Int, limit: Int): Int = (x, y, limit) match {
+    case (0, _, _) => limit
+    case (_, _, limit) if limit == rack.tiles.length - 1 => limit
+    case (x, y, limit) if board.boardTiles(x - 1)(y).isAnchor => limit
+    case (x, y, limit) => findVerticalLimit(x - 1, y, limit + 1)
+  }
+
   def findHighestScoringWord(isStartingWord: Boolean): HighestScoringWord = {
     val highestScoringWord: HighestScoringWord =
       new HighestScoringWord("", 0, 0, 0, 0, Direction.HORIZONTAL)
@@ -31,63 +83,30 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
     for (x <- board.boardTiles.indices) {
       for (y <- board.boardTiles(x).indices) {
         val boardTile: BoardTile = board.boardTiles(x)(y)
-        var wordPoints: Int = 0
 
         if (boardTile.isAnchor) {
+
           // Horizontal words
           if (boardTile.requiresLeftCrossCheck && boardTile.horizontalCrossChecks.nonEmpty) {
-            var startingPoint = y
-            var startingTrie = trie
-
-            while (startingPoint > 0 && !board.boardTiles(x)(startingPoint - 1).isAnchor) {
-              startingPoint -= 1
-            }
-            val initY = startingPoint
-            while (startingPoint != y) {
-              startingTrie = startingTrie.children(board.boardTiles(x)(startingPoint).tile.get.letter - 65)
-              wordPoints += TileUtilities.getTileScore(board.boardTiles(x)(startingPoint).tile.get.letter)
-              startingPoint += 1
-            }
-            extendRight(x, initY, x, y, rack.tiles, startingTrie, wordPoints,
+            val startingPoint = findStartingLeftHorizontalNonAnchorTile(x, y - 1)
+            val startingHorizontal = updateHorizontalStartingTrie(x, startingPoint, y, trie, 0)
+            extendRight(x, startingPoint, x, y, rack.tiles, startingHorizontal._1, startingHorizontal._2,
               0, rack.tiles.length, new ListBuffer[Multiplier.Value], 0)
           } else if (!boardTile.requiresLeftCrossCheck) {
-            var startingPoint = y
-            var startingLimit = 0
-            while (startingPoint > 0 && startingLimit < rack.tiles.length - 1 &&
-              !board.boardTiles(x)(startingPoint - 1).isAnchor) {
-              startingPoint -= 1
-              startingLimit += 1
-            }
-            extendLeft(x, y, x, y, rack.tiles, startingLimit, 0, trie,
+            val horizontalLimit: Int = findHorizontalLimit(x, y, 0)
+            extendLeft(x, y, x, y, rack.tiles, horizontalLimit, 0, trie,
               0, isStartingWord)
           }
 
           // Vertical words
           if (boardTile.requiresAboveCrossCheck && boardTile.verticalCrossChecks.nonEmpty) {
-            var startingPoint = x
-            var startingTrie = trie
-
-            while (startingPoint > 0 && !board.boardTiles(startingPoint - 1)(y).isAnchor) {
-              startingPoint -= 1
-            }
-            val initX = startingPoint
-            while (startingPoint != x) {
-              startingTrie = startingTrie.children(board.boardTiles(startingPoint)(y).tile.get.letter - 65)
-              wordPoints += TileUtilities.getTileScore(board.boardTiles(startingPoint)(y).tile.get.letter)
-              startingPoint += 1
-            }
-            extendBelow(initX, y, x, y, rack.tiles, startingTrie, wordPoints,
+            val startingPoint = findStartingAboveVerticalNonAnchorTile(x - 1, y)
+            val startingVertical = updateVerticalStartingTrie(startingPoint, y, x, trie, 0)
+            extendBelow(startingPoint, y, x, y, rack.tiles, startingVertical._1, startingVertical._2,
               0, rack.tiles.length, new ListBuffer[Multiplier.Value], 0)
           } else if (!boardTile.requiresAboveCrossCheck) {
-            var startingPoint = x
-            var startingLimit = 0
-
-            while (startingPoint > 0 && startingLimit < rack.tiles.length - 1 &&
-              !board.boardTiles(startingPoint - 1)(y).isAnchor) {
-              startingPoint -= 1
-              startingLimit += 1
-            }
-            extendAbove(x, y, x, y, rack.tiles, startingLimit, 0,
+            val verticalLimit: Int = findVerticalLimit(x, y, 0)
+            extendAbove(x, y, x, y, rack.tiles, verticalLimit, 0,
               trie, 0, isStartingWord)
           }
         }
@@ -292,7 +311,6 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
 
     highestScoringWord
   }
-
 
   def currentPoints(score: Int, bonuses: ListBuffer[Multiplier.Value]): Int = {
     score * bonuses.map(v => TileUtilities.getWordMultiplierValue(v)).product

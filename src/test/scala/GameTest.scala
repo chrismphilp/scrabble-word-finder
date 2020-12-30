@@ -339,7 +339,6 @@ class GameTest extends AnyFunSuite {
 
   test("Should correctly simulate whole game without errors") {
 
-
     val board: Board = new Board(initialiseBoard(), trie)
     val game: Game = new Game(board, trie, rack, bag)
     game.updateRack()

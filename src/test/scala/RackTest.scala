@@ -60,28 +60,4 @@ class RackTest extends AnyFunSuite {
     assert(longestWord === "SWAGGIE")
     assert(TrieUtilities.search(trie, longestWord, 0) === true)
   }
-
-  test("Should find highest scoring word") {
-    rack.fillRack(bag)
-    val highestScoringWord: (String, Int) = TrieUtilities.findHighestScoringInitialWord(trie, rack.tiles)
-
-    assert(TrieUtilities.search(trie, highestScoringWord._1, 0) === true)
-    assert(highestScoringWord._2 > 0 === true)
-  }
-
-  test("Should find highest scoring word (WART) from pre-made set") {
-    rack.setRack(List(W(), A(), R(), T()).to(ListBuffer))
-    var highestScoringWord: (String, Int) = TrieUtilities.findHighestScoringInitialWord(trie, rack.tiles)
-
-    assert(highestScoringWord._1 === "WART")
-    assert(TrieUtilities.search(trie, highestScoringWord._1, 0) === true)
-    assert(highestScoringWord._2 === 7)
-
-    rack.setRack(List(R(), A(), T(), W()).to(ListBuffer))
-    highestScoringWord = TrieUtilities.findHighestScoringInitialWord(trie, rack.tiles)
-
-    assert(highestScoringWord._1 === "WART")
-    assert(TrieUtilities.search(trie, highestScoringWord._1, 0) === true)
-    assert(highestScoringWord._2 === 7)
-  }
 }
