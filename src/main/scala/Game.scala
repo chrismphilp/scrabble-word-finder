@@ -330,6 +330,7 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
   def placeHighestScoringWord(highestScoringWord: HighestScoringWord): Unit = {
     println("Placing " + highestScoringWord.direction + " word: " + highestScoringWord.word +
       " at: " + highestScoringWord.x + "," + highestScoringWord.y + " for " + highestScoringWord.score)
+    println("Definition: " + WordDefinition.getWordDefinition(highestScoringWord.word))
     val newTiles: ListBuffer[PlayerTile] = rack.tiles.clone()
 
     if (highestScoringWord.direction.equals(Direction.HORIZONTAL)) {
