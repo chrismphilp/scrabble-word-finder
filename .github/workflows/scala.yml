@@ -2,9 +2,9 @@ name: Scala CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature/optimal-move ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, feature/optimal-move ]
 
 jobs:
   build:

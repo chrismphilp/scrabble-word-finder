@@ -1,6 +1,7 @@
 import TileUtilities.{Blank, FilledBoardTile}
 
 import scala.annotation.tailrec
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 /*
@@ -77,8 +78,12 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
   }
 
   def findHighestScoringWord(isStartingWord: Boolean): HighestScoringWord = {
-    val highestScoringWord: HighestScoringWord =
-      new HighestScoringWord("", 0, 0, 0, 0, Direction.HORIZONTAL)
+    val highestScoringWords: mutable.HashSet[HighestScoringWord] = findHighestScoringWords(isStartingWord)
+    highestScoringWords.maxBy(_.score)
+  }
+
+  def findHighestScoringWords(isStartingWord: Boolean): mutable.HashSet[HighestScoringWord] = {
+    val highestScoringWords: mutable.HashSet[HighestScoringWord] = new mutable.HashSet[HighestScoringWord]()
 
     for (x <- board.boardTiles.indices) {
       for (y <- board.boardTiles(x).indices) {
@@ -137,19 +142,18 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
         var tmpBonuses: ListBuffer[Multiplier.Value] = bonuses.clone()
 
         if (currY == board.boardTiles.length) {
-          if (currTrie.isComplete && totalPoints > highestScoringWord.score) {
-            setHighestScoringWord(highestScoringWord, currTrie.completedWord, totalPoints, crossCheckPoints,
-              initX, initY, Direction.HORIZONTAL)
+          if (currTrie.isComplete) {
+            highestScoringWords.addOne(new HighestScoringWord(
+              currTrie.completedWord, initX, initY, totalPoints, crossCheckPoints, Direction.HORIZONTAL))
           }
         } else {
           val boardTile: BoardTile = board.boardTiles(currX)(currY)
 
           if (boardTile.tile.isEmpty) {
             if (limitNumber < 0 && letters.length < initialRackSize &&
-              currTrie.isComplete &&
-              totalPoints > highestScoringWord.score) {
-              setHighestScoringWord(highestScoringWord, currTrie.completedWord, totalPoints, crossCheckPoints,
-                initX, initY, Direction.HORIZONTAL)
+              currTrie.isComplete) {
+              highestScoringWords.addOne(new HighestScoringWord(
+                currTrie.completedWord, initX, initY, totalPoints, crossCheckPoints, Direction.HORIZONTAL))
             }
 
             boardTile.multiplier match {
@@ -234,19 +238,17 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
         var tmpBonuses: ListBuffer[Multiplier.Value] = bonuses.clone()
 
         if (currX == board.boardTiles.length) {
-          if (currTrie.isComplete && totalPoints > highestScoringWord.score) {
-            setHighestScoringWord(highestScoringWord, currTrie.completedWord, totalPoints, crossCheckPoints,
-              initX, initY, Direction.VERTICAL)
+          if (currTrie.isComplete) {
+            highestScoringWords.addOne(new HighestScoringWord(
+              currTrie.completedWord, initX, initY, totalPoints, crossCheckPoints, Direction.VERTICAL))
           }
         } else {
           val boardTile: BoardTile = board.boardTiles(currX)(currY)
 
           if (boardTile.tile.isEmpty) {
-            if (limitNumber < 0 && letters.length < initialRackSize &&
-              currTrie.isComplete &&
-              totalPoints > highestScoringWord.score) {
-              setHighestScoringWord(highestScoringWord, currTrie.completedWord, totalPoints, crossCheckPoints,
-                initX, initY, Direction.VERTICAL)
+            if (limitNumber < 0 && letters.length < initialRackSize && currTrie.isComplete) {
+              highestScoringWords.addOne(new HighestScoringWord(
+                currTrie.completedWord, initX, initY, totalPoints, crossCheckPoints, Direction.VERTICAL))
             }
 
             boardTile.multiplier match {
@@ -309,7 +311,7 @@ class Game(board: Board, trie: Trie, rack: Rack, bag: Bag) {
       }
     }
 
-    highestScoringWord
+    highestScoringWords
   }
 
   def currentPoints(score: Int, bonuses: ListBuffer[Multiplier.Value]): Int = {

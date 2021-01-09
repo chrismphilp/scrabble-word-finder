@@ -85,7 +85,7 @@ class ErrorGameStateTest extends AnyFunSuite {
 
     val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
 
-    assert(highestScoringWord.word === "ENCLAVE")
+    assert(List("VALENCE", "ENCLAVE").contains(highestScoringWord.word))
     assert(highestScoringWord.x === 10)
     assert(highestScoringWord.y === 0)
   }
