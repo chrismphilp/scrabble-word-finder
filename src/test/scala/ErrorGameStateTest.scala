@@ -37,7 +37,6 @@ class ErrorGameStateTest extends AnyFunSuite {
     rack.setRack(List(G(), C(), D(), N(), O(), E(), E()).to(ListBuffer))
 
     val game: Game = new Game(board, trie, rack, bag)
-    game.printBoard()
     game.updateBoard()
 
     assert(board.boardTiles.length === 15)
@@ -49,7 +48,8 @@ class ErrorGameStateTest extends AnyFunSuite {
     assert(board.boardTiles(6)(9).requiresRightCrossCheck === false)
     assert(board.boardTiles(6)(9).verticalCrossChecks.contains('O') === false)
 
-    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
+    val highestScoringWord: HighestScoringWord = GreedyAlgorithm
+      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
 
     assert(board.boardTiles(10)(7).requiresBelowCrossCheck === true)
     assert(highestScoringWord.word === "COGGED")
@@ -77,13 +77,13 @@ class ErrorGameStateTest extends AnyFunSuite {
     rack.setRack(List(E(), N(), C(), L(), A(), V(), E()).to(ListBuffer))
 
     val game: Game = new Game(board, trie, rack, bag)
-    game.printBoard()
     game.updateBoard()
 
     assert(board.boardTiles.length === 15)
     assert(board.boardTiles(0).length === 15)
 
-    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
+    val highestScoringWord: HighestScoringWord = GreedyAlgorithm
+      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
 
     assert(List("VALENCE", "ENCLAVE").contains(highestScoringWord.word))
     assert(highestScoringWord.x === 10)

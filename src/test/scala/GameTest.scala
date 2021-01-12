@@ -36,7 +36,8 @@ class GameTest extends AnyFunSuite {
     val game: Game = new Game(board, trie, rack, bag)
     game.updateBoard()
 
-    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
+    val highestScoringWord: HighestScoringWord = GreedyAlgorithm
+      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
 
     assert(highestScoringWord.score === 42)
   }
@@ -83,7 +84,8 @@ class GameTest extends AnyFunSuite {
     val game: Game = new Game(board, trie, rack, bag)
     game.updateBoard()
 
-    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
+    val highestScoringWord: HighestScoringWord = GreedyAlgorithm
+      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
 
     assert(highestScoringWord.score === 27)
   }
@@ -134,7 +136,8 @@ class GameTest extends AnyFunSuite {
     val game: Game = new Game(board, trie, rack, bag)
     game.updateBoard()
 
-    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
+    val highestScoringWord: HighestScoringWord = GreedyAlgorithm
+      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
 
     assert(highestScoringWord.word === "RAPE")
     assert(highestScoringWord.score === 37)
@@ -200,7 +203,8 @@ class GameTest extends AnyFunSuite {
     val game: Game = new Game(board, trie, rack, bag)
     game.updateBoard()
 
-    val highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
+    val highestScoringWord: HighestScoringWord = GreedyAlgorithm
+      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
 
     assert(highestScoringWord.word === "PASH")
     assert(highestScoringWord.score === 18)
@@ -213,19 +217,22 @@ class GameTest extends AnyFunSuite {
     rack.setRack(List(S(), P(), E(), A(), R(), E(), L()).to(ListBuffer))
     val game: Game = new Game(board, trie, rack, bag)
     game.initializeGame()
-    var highestScoringWord: HighestScoringWord = game.findHighestScoringWord(true)
+    var highestScoringWord: HighestScoringWord = GreedyAlgorithm
+      .findHighestScoringWord(board, trie, rack, isStartingWord = true)
 
     assert(highestScoringWord.score === 74)
 
     rack.setRack(List(D(), E(), Y(), N(), O(), R(), T()).to(ListBuffer))
     game.initializeGame()
-    highestScoringWord = game.findHighestScoringWord(true)
+    highestScoringWord = GreedyAlgorithm
+      .findHighestScoringWord(board, trie, rack, isStartingWord = true)
 
     assert(highestScoringWord.score === 28)
 
     rack.setRack(List(Z(), E(), L(), N(), O(), R(), S()).to(ListBuffer))
     game.initializeGame()
-    highestScoringWord = game.findHighestScoringWord(true)
+    highestScoringWord = GreedyAlgorithm
+      .findHighestScoringWord(board, trie, rack, isStartingWord = true)
 
     assert(highestScoringWord.score === 50)
   }
@@ -257,7 +264,8 @@ class GameTest extends AnyFunSuite {
     var game: Game = new Game(board, trie, rack, bag)
     game.updateBoard()
 
-    var highestScoringWord: HighestScoringWord = game.findHighestScoringWord(false)
+    var highestScoringWord: HighestScoringWord = GreedyAlgorithm
+      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
 
     assert(highestScoringWord.word === "PRESALE")
     assert(highestScoringWord.score === 96)
@@ -277,7 +285,8 @@ class GameTest extends AnyFunSuite {
 
     game = new Game(board, trie, rack, bag)
     game.updateBoard()
-    highestScoringWord = game.findHighestScoringWord(false)
+    highestScoringWord = GreedyAlgorithm
+      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
 
     assert(highestScoringWord.score === 70)
 
@@ -293,7 +302,8 @@ class GameTest extends AnyFunSuite {
     rack.setRack(List(Q(), U(), O(), T(), E(), D(), U()).to(ListBuffer))
     game = new Game(board, trie, rack, bag)
     game.updateBoard()
-    highestScoringWord = game.findHighestScoringWord(false)
+    highestScoringWord = GreedyAlgorithm
+      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
 
     assert(highestScoringWord.score === 39)
 
@@ -307,7 +317,8 @@ class GameTest extends AnyFunSuite {
     rack.setRack(List(U(), V(), D(), I(), A(), O(), X()).to(ListBuffer))
     game = new Game(board, trie, rack, bag)
     game.updateBoard()
-    highestScoringWord = game.findHighestScoringWord(false)
+    highestScoringWord = GreedyAlgorithm
+      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
 
     assert(highestScoringWord.word === "DOUX")
     assert(highestScoringWord.score === 47)
@@ -320,9 +331,8 @@ class GameTest extends AnyFunSuite {
     rack.setRack(List(C(), V(), Y(), I(), A(), B(), E()).to(ListBuffer))
     game = new Game(board, trie, rack, bag)
     game.updateBoard()
-    highestScoringWord = game.findHighestScoringWord(false)
-
-    game.printBoard()
+    highestScoringWord = GreedyAlgorithm
+      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
 
     assert(board.boardTiles(6)(6).verticalCrossChecks.contains('Y') === true)
 
@@ -333,21 +343,24 @@ class GameTest extends AnyFunSuite {
 
     val board: Board = new Board(initialiseBoard(), trie)
     val game: Game = new Game(board, trie, rack, bag)
-    game.updateRack()
-    rack.printRack()
-    game.placeHighestScoringWord(game.findHighestScoringWord(true))
-    game.updateRack()
-    game.printBoard()
+    var gameInProgress: Boolean = true
+    var bagSize: Int = bag.tiles.size
 
-    while (rack.tiles.nonEmpty) {
-      game.updateBoard()
-      val highestScoringWord = game.findHighestScoringWord(false)
-      if (highestScoringWord.word === "") rack.tiles = ListBuffer.empty
-      rack.printRack()
-      game.placeHighestScoringWord(highestScoringWord)
-      game.updateRack()
-      game.printBoard()
+    assert(bagSize === 100)
+    board.printBoard()
+
+    val highestScoringWord: HighestScoringWord = game.playerMove(Algorithm.GREEDY, isStartingWord = true)
+    bagSize -= 7
+    bagSize -= highestScoringWord.tilesUsed.length
+    assert(bagSize === bag.tiles.size)
+
+    while (gameInProgress) {
+      val highestScoringWord: HighestScoringWord = game.playerMove(Algorithm.GREEDY, isStartingWord = false)
+      bagSize -= highestScoringWord.tilesUsed.length
+      assert(bagSize === bag.tiles.size)
+      if (highestScoringWord.word === "") gameInProgress = false
     }
+    assert(board.countFilledBoardTiles() === 100)
     println("Done")
   }
 }

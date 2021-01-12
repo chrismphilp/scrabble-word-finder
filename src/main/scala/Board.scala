@@ -264,4 +264,18 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
     if (shouldTriple) currPoints *= 3
     boardTiles(x)(y).verticalCrossChecks += char -> currPoints
   }
+
+  def printBoard(): Unit = {
+    println("-------------------------------------------")
+    boardTiles.foreach(row => printBoardRow(row))
+    println("-------------------------------------------")
+  }
+
+  def printBoardRow(boardTile: Array[BoardTile]): Unit = {
+    println(boardTile.map(tile => Console.BLUE + "|" +
+      (if (tile.tile.nonEmpty) tile.tile.get.letter else ' ')
+      + "|").mkString(" "))
+  }
+
+  def countFilledBoardTiles(): Int = boardTiles.map(row => row.count(A => A.tile.nonEmpty)).sum
 }
