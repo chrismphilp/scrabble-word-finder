@@ -344,23 +344,22 @@ class GameTest extends AnyFunSuite {
     val board: Board = new Board(initialiseBoard(), trie)
     val game: Game = new Game(board, trie, rack, bag)
     var gameInProgress: Boolean = true
-    var bagSize: Int = bag.tiles.size
+    var tilesPlaced: Int = 100 - bag.tiles.size
 
-    assert(bagSize === 100)
+    assertResult(tilesPlaced)(0)
+    assertResult(rack.tiles.length)( 0)
     board.printBoard()
 
     val highestScoringWord: HighestScoringWord = game.playerMove(Algorithm.GREEDY, isStartingWord = true)
-    bagSize -= 7
-    bagSize -= highestScoringWord.tilesUsed.length
-    assert(bagSize === bag.tiles.size)
+    tilesPlaced += highestScoringWord.tilesUsed.length
 
     while (gameInProgress) {
       val highestScoringWord: HighestScoringWord = game.playerMove(Algorithm.GREEDY, isStartingWord = false)
-      bagSize -= highestScoringWord.tilesUsed.length
-      assert(bagSize === bag.tiles.size)
+      tilesPlaced += highestScoringWord.tilesUsed.length
       if (highestScoringWord.word === "") gameInProgress = false
     }
-    assert(board.countFilledBoardTiles() === 100)
+    assertResult(tilesPlaced)(100)
+    assertResult(board.countFilledBoardTiles())(100)
     println("Done")
   }
 }
