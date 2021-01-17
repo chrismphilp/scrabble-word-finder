@@ -44,7 +44,7 @@ object BoardUtilities {
     }
 
     @tailrec
-    def extendLeft(initX: Int, initY: Int, currX: Int, currY: Int, letters: ListBuffer[PlayerTile],
+     def extendLeft(initX: Int, initY: Int, currX: Int, currY: Int, letters: ListBuffer[PlayerTile],
                    limit: Int, distanceFromOrigin: Int, currTrie: Trie, currPoints: Int,
                    isStartingWord: Boolean): Unit = {
 
@@ -244,19 +244,19 @@ object BoardUtilities {
     highestScoringWords
   }
 
-  def currentPoints(score: Int, bonuses: ListBuffer[Multiplier.Value]): Int = {
+  private def currentPoints(score: Int, bonuses: ListBuffer[Multiplier.Value]): Int = {
     score * bonuses.map(v => TileUtilities.getWordMultiplierValue(v)).product
   }
 
   @tailrec
-  final def findStartingLeftHorizontalNonAnchorTile(board: Board, x: Int, y: Int): Int = (x, y) match {
+  private final def findStartingLeftHorizontalNonAnchorTile(board: Board, x: Int, y: Int): Int = (x, y) match {
     case (x, y) if board.boardTiles(x)(y).isAnchor => y + 1
     case (_, 0) => 0
     case (x, y) => findStartingLeftHorizontalNonAnchorTile(board, x, y - 1)
   }
 
   @tailrec
-  final def updateHorizontalStartingTrie(board: Board, x: Int, y: Int, targetY: Int,
+  private final def updateHorizontalStartingTrie(board: Board, x: Int, y: Int, targetY: Int,
                                          tmpTrie: Trie, wordPoints: Int): (Trie, Int) = {
     if (y == targetY) (tmpTrie, wordPoints)
     else {
@@ -267,7 +267,7 @@ object BoardUtilities {
   }
 
   @tailrec
-  final def findHorizontalLimit(board: Board, rack: Rack, x: Int, y: Int,
+  private final def findHorizontalLimit(board: Board, rack: Rack, x: Int, y: Int,
                                 limit: Int): Int = (x, y, limit) match {
     case (_, 0, _) => limit
     case (_, _, limit) if limit == rack.tiles.length - 1 => limit
@@ -276,7 +276,7 @@ object BoardUtilities {
   }
 
   @tailrec
-  final def findStartingAboveVerticalNonAnchorTile(board: Board, x: Int, y: Int): Int = (x, y) match {
+  private final def findStartingAboveVerticalNonAnchorTile(board: Board, x: Int, y: Int): Int = (x, y) match {
     case (x, y) if board.boardTiles(x)(y).isAnchor => x + 1
     case (0, _) => 0
     case (x, y) => findStartingAboveVerticalNonAnchorTile(board, x - 1, y)

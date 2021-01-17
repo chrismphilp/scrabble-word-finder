@@ -30,7 +30,7 @@ class Game(board: Board, trie: Trie, players: List[Player], bag: Bag) {
     }
   }
 
-  def playerMove(player: Player, isStartingWord: Boolean): HighestScoringWord = player.algorithm match {
+  private def playerMove(player: Player, isStartingWord: Boolean): HighestScoringWord = player.algorithm match {
     case Algorithm.OPTIMAL =>
       OptimalAlgorithm.findOptimalPlay()
     case Algorithm.GREEDY =>
@@ -45,7 +45,7 @@ class Game(board: Board, trie: Trie, players: List[Player], bag: Bag) {
       highestScoringWord
   }
 
-  def placeHighestScoringWord(player: Player, highestScoringWord: HighestScoringWord): Unit = {
+  private def placeHighestScoringWord(player: Player, highestScoringWord: HighestScoringWord): Unit = {
     println(s"${player.name} score prior to placing word: ${player.score}")
     println(s"${player.name} placing ${highestScoringWord.direction} word: ${highestScoringWord.word}")
     println(s"Word placed at: ${highestScoringWord.x}, ${highestScoringWord.y} for ${highestScoringWord.score} points.")

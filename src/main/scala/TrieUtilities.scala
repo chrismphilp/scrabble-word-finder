@@ -28,7 +28,7 @@ object TrieUtilities {
     }
   }
 
-  def findInitialWords(trie: Trie, tiles: ListBuffer[PlayerTile]): mutable.HashSet[String] = {
+  protected def findInitialWords(trie: Trie, tiles: ListBuffer[PlayerTile]): mutable.HashSet[String] = {
     val set: mutable.HashSet[String] = new mutable.HashSet[String]
 
     findWords(trie, List.range(0, tiles.length).to(ListBuffer))
@@ -53,7 +53,7 @@ object TrieUtilities {
     set
   }
 
-  def findLongestInitialWord(trie: Trie, tiles: ListBuffer[PlayerTile]): String = {
+  protected def findLongestInitialWord(trie: Trie, tiles: ListBuffer[PlayerTile]): String = {
     var longestWord: String = new String
 
     findLongestWord(trie, List.range(0, tiles.length).to(ListBuffer), 0)

@@ -1,1 +1,2 @@
-class PlayerTile(var letter: Char, var score: Int)
+class PlayerTile(var letter: Char,
+                 var score: Int)

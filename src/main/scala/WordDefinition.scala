@@ -1,4 +1,3 @@
-
 import scalaj.http.{Http, HttpResponse}
 
 import scala.util.matching.Regex

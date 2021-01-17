@@ -13,7 +13,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
     }
   }
 
-  def resetTile(x: Int, y: Int): Unit = {
+  private def resetTile(x: Int, y: Int): Unit = {
     val boardTile: BoardTile = boardTiles(x)(y)
     boardTile.isAnchor = false
     boardTile.requiresAboveCrossCheck = false
@@ -24,7 +24,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
     boardTile.verticalCrossChecks = mutable.HashMap.empty
   }
 
-  def updateAnchorTile(x: Int, y: Int): Unit = {
+  private def updateAnchorTile(x: Int, y: Int): Unit = {
     val boardTile: BoardTile = boardTiles(x)(y)
 
     if (boardTile.tile.isEmpty) {
@@ -37,27 +37,27 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
     }
   }
 
-  def isAboveCrossCheckRequired(x: Int, y: Int): Boolean = {
+  private def isAboveCrossCheckRequired(x: Int, y: Int): Boolean = {
     val ABOVE: Int = x - 1
     ABOVE >= 0 && boardTiles(ABOVE)(y).tile.nonEmpty
   }
 
-  def isBelowCrossCheckRequired(x: Int, y: Int): Boolean = {
+  private def isBelowCrossCheckRequired(x: Int, y: Int): Boolean = {
     val BELOW: Int = x + 1
     BELOW < boardTiles.length && boardTiles(BELOW)(y).tile.nonEmpty
   }
 
-  def isRightCrossCheckRequired(x: Int, y: Int): Boolean = {
+  private def isRightCrossCheckRequired(x: Int, y: Int): Boolean = {
     val RIGHT: Int = y + 1
     RIGHT < boardTiles.length && boardTiles(x)(RIGHT).tile.nonEmpty
   }
 
-  def isLeftCrossCheckRequired(x: Int, y: Int): Boolean = {
+  private def isLeftCrossCheckRequired(x: Int, y: Int): Boolean = {
     val LEFT: Int = y - 1
     LEFT >= 0 && boardTiles(x)(LEFT).tile.nonEmpty
   }
 
-  def updateCrossCheckTile(x: Int, y: Int): Unit = {
+  private def updateCrossCheckTile(x: Int, y: Int): Unit = {
     val boardTile: BoardTile = boardTiles(x)(y)
     if (boardTile.isAnchor) {
       if (boardTile.requiresAboveCrossCheck || boardTile.requiresBelowCrossCheck) {
@@ -69,7 +69,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
     }
   }
 
-  def updateHorizontalCrossChecks(x: Int, y: Int): Unit = {
+  private def updateHorizontalCrossChecks(x: Int, y: Int): Unit = {
 
     var startingYPoint = y
     var startingCrossSumPoints = 0
@@ -126,14 +126,14 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
   }
 
   @tailrec
-  final def findStartingHorizontalPoint(x: Int, y: Int): Int = (x, y) match {
+  private final def findStartingHorizontalPoint(x: Int, y: Int): Int = (x, y) match {
     case (x, y) if boardTiles(x)(y).tile.isEmpty => y + 1
     case (_, 0) => 0
     case (_, y) => findStartingHorizontalPoint(x, y - 1)
   }
 
   @tailrec
-  final def processHorizontalPrePartOfWord(x: Int, y: Int, target: Int,
+  private final def processHorizontalPrePartOfWord(x: Int, y: Int, target: Int,
                                            tmpTrie: Trie, crossSumPoints: Int): (Trie, Int) = {
     if (y == target) (tmpTrie, crossSumPoints)
     else processHorizontalPrePartOfWord(x, y + 1, target,
@@ -153,7 +153,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
     } else (y, tmpTrie, points)
   }
 
-  def addHorizontalCrossChecks(x: Int, y: Int, points: Int, char: Char,
+  private def addHorizontalCrossChecks(x: Int, y: Int, points: Int, char: Char,
                                shouldDouble: Boolean, shouldTriple: Boolean): Unit = {
     var currPoints: Int = points
     if (!boardTiles(x)(y).horizontalCrossChecks.contains(' ')) {
@@ -167,7 +167,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
     boardTiles(x)(y).horizontalCrossChecks += char -> currPoints
   }
 
-  def updateVerticalCrossChecks(x: Int, y: Int): Unit = {
+  private def updateVerticalCrossChecks(x: Int, y: Int): Unit = {
 
     var startingXPoint = x
     var startingCrossSumPoints = 0
@@ -224,14 +224,14 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
   }
 
   @tailrec
-  final def findStartingVerticalPoint(x: Int, y: Int): Int = (x, y) match {
+  private final def findStartingVerticalPoint(x: Int, y: Int): Int = (x, y) match {
     case (x, y) if boardTiles(x)(y).tile.isEmpty => x + 1
     case (0, _) => 0
     case (x, y) => findStartingVerticalPoint(x - 1, y)
   }
 
   @tailrec
-  final def processVerticalPrePartOfWord(x: Int, y: Int, target: Int,
+  private final def processVerticalPrePartOfWord(x: Int, y: Int, target: Int,
                                          tmpTrie: Trie, crossSumPoints: Int): (Trie, Int) = {
     if (x == target) (tmpTrie, crossSumPoints)
     else processVerticalPrePartOfWord(x + 1, y, target,
@@ -240,7 +240,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
   }
 
   @tailrec
-  final def processVerticalPostPartOfWord(x: Int, y: Int, tmpTrie: Trie,
+  private final def processVerticalPostPartOfWord(x: Int, y: Int, tmpTrie: Trie,
                                           points: Int): (Int, Trie, Int) = {
     if (x < boardTiles.length &&
       boardTiles(x)(y).tile.nonEmpty &&
@@ -251,7 +251,7 @@ class Board(var boardTiles: Array[Array[BoardTile]], val trie: Trie) {
     } else (x, tmpTrie, points)
   }
 
-  def addVerticalCrossChecks(x: Int, y: Int, points: Int, char: Char,
+  private def addVerticalCrossChecks(x: Int, y: Int, points: Int, char: Char,
                              shouldDouble: Boolean, shouldTriple: Boolean): Unit = {
     var currPoints: Int = points
     if (!boardTiles(x)(y).verticalCrossChecks.contains(' ')) {
