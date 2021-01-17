@@ -7,10 +7,13 @@ import scala.collection.mutable.ListBuffer
 
 class GameTest extends AnyFunSuite {
   val trie: Trie = FileProcessor.convertFileToTrie("collins-scrabble-words-2019.txt")
-  val rack: Rack = new Rack(new ListBuffer[PlayerTile])
-  val bag: Bag = createInitialBag()
 
   test("Should correctly find highest scoring word from single horizontal word") {
+    val rack: Rack = new Rack(new ListBuffer[PlayerTile])
+    val player1: Player = new Player("Player1", rack, new ListBuffer[HighestScoringWord])
+    val players: List[Player] = List(player1)
+    val bag: Bag = createInitialBag()
+
     val board: Board = new Board(Array(
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
@@ -33,7 +36,7 @@ class GameTest extends AnyFunSuite {
 
     rack.setRack(List(A(), P(), E(), R()).to(ListBuffer))
 
-    val game: Game = new Game(board, trie, rack, bag)
+    val game: Game = new Game(board, trie, players, bag)
     game.updateBoard()
 
     val highestScoringWord: HighestScoringWord = GreedyAlgorithm
@@ -43,6 +46,10 @@ class GameTest extends AnyFunSuite {
   }
 
   test("Should correctly find highest scoring word from multiple separated horizontal words") {
+    val rack: Rack = new Rack(new ListBuffer[PlayerTile])
+    val player1: Player = new Player("Player1", rack, new ListBuffer[HighestScoringWord])
+    val players: List[Player] = List(player1)
+    val bag: Bag = createInitialBag()
     val board: Board = new Board(Array(
       Array(
         new BoardTile(Option(G()), Multiplier.NONE, new mutable.HashMap[Char, Int], false,
@@ -81,7 +88,7 @@ class GameTest extends AnyFunSuite {
 
     rack.setRack(List(A(), P(), E(), R()).to(ListBuffer))
 
-    val game: Game = new Game(board, trie, rack, bag)
+    val game: Game = new Game(board, trie, players, bag)
     game.updateBoard()
 
     val highestScoringWord: HighestScoringWord = GreedyAlgorithm
@@ -91,6 +98,10 @@ class GameTest extends AnyFunSuite {
   }
 
   test("Should correctly find highest scoring word from single vertical word") {
+    val rack: Rack = new Rack(new ListBuffer[PlayerTile])
+    val player1: Player = new Player("Player1", rack, new ListBuffer[HighestScoringWord])
+    val players: List[Player] = List(player1)
+    val bag: Bag = createInitialBag()
     val board: Board = new Board(Array(
       Array(EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile(), EmptyBoardTile()),
       Array(
@@ -133,7 +144,7 @@ class GameTest extends AnyFunSuite {
 
     rack.setRack(List(A(), P(), E(), R()).to(ListBuffer))
 
-    val game: Game = new Game(board, trie, rack, bag)
+    val game: Game = new Game(board, trie, players, bag)
     game.updateBoard()
 
     val highestScoringWord: HighestScoringWord = GreedyAlgorithm
@@ -144,6 +155,10 @@ class GameTest extends AnyFunSuite {
   }
 
   test("Should correctly find highest scoring word from multiple separated vertical words") {
+    val rack: Rack = new Rack(new ListBuffer[PlayerTile])
+    val player1: Player = new Player("Player1", rack, new ListBuffer[HighestScoringWord])
+    val players: List[Player] = List(player1)
+    val bag: Bag = createInitialBag()
     val board: Board = new Board(Array(
       Array(
         EmptyBoardTile(),
@@ -200,7 +215,7 @@ class GameTest extends AnyFunSuite {
 
     rack.setRack(List(S(), P(), E(), R()).to(ListBuffer))
 
-    val game: Game = new Game(board, trie, rack, bag)
+    val game: Game = new Game(board, trie, players, bag)
     game.updateBoard()
 
     val highestScoringWord: HighestScoringWord = GreedyAlgorithm
@@ -211,11 +226,14 @@ class GameTest extends AnyFunSuite {
   }
 
   test("Should correctly find highest scoring starting word") {
-
+    val rack: Rack = new Rack(new ListBuffer[PlayerTile])
+    val player1: Player = new Player("Player1", rack, new ListBuffer[HighestScoringWord])
+    val players: List[Player] = List(player1)
+    val bag: Bag = createInitialBag()
     val board: Board = new Board(Array(), trie)
 
     rack.setRack(List(S(), P(), E(), A(), R(), E(), L()).to(ListBuffer))
-    val game: Game = new Game(board, trie, rack, bag)
+    val game: Game = new Game(board, trie, players, bag)
     game.initializeGame()
     var highestScoringWord: HighestScoringWord = GreedyAlgorithm
       .findHighestScoringWord(board, trie, rack, isStartingWord = true)
@@ -238,7 +256,10 @@ class GameTest extends AnyFunSuite {
   }
 
   test("Should correctly simulate highest scoring word for each tile placed") {
-
+    val rack: Rack = new Rack(new ListBuffer[PlayerTile])
+    val player1: Player = new Player("Player1", rack, new ListBuffer[HighestScoringWord])
+    val players: List[Player] = List(player1)
+    val bag: Bag = createInitialBag()
     val board: Board = new Board(initialiseBoard(), trie)
 
     board.boardTiles(4)(4) = FilledBoardTile(M())
@@ -261,7 +282,7 @@ class GameTest extends AnyFunSuite {
     board.boardTiles(7)(9) = FilledBoardTile(H())
 
     rack.setRack(List(S(), P(), E(), A(), R(), E(), L()).to(ListBuffer))
-    var game: Game = new Game(board, trie, rack, bag)
+    var game: Game = new Game(board, trie, players, bag)
     game.updateBoard()
 
     var highestScoringWord: HighestScoringWord = GreedyAlgorithm
@@ -283,7 +304,7 @@ class GameTest extends AnyFunSuite {
     board.boardTiles(7)(10) = FilledBoardTile(S())
     board.boardTiles(8)(10) = FilledBoardTile(S())
 
-    game = new Game(board, trie, rack, bag)
+    game = new Game(board, trie, players, bag)
     game.updateBoard()
     highestScoringWord = GreedyAlgorithm
       .findHighestScoringWord(board, trie, rack, isStartingWord = false)
@@ -300,7 +321,7 @@ class GameTest extends AnyFunSuite {
     board.boardTiles(1)(8) = FilledBoardTile(S())
 
     rack.setRack(List(Q(), U(), O(), T(), E(), D(), U()).to(ListBuffer))
-    game = new Game(board, trie, rack, bag)
+    game = new Game(board, trie, players, bag)
     game.updateBoard()
     highestScoringWord = GreedyAlgorithm
       .findHighestScoringWord(board, trie, rack, isStartingWord = false)
@@ -315,7 +336,7 @@ class GameTest extends AnyFunSuite {
     board.boardTiles(6)(11) = FilledBoardTile(D())
 
     rack.setRack(List(U(), V(), D(), I(), A(), O(), X()).to(ListBuffer))
-    game = new Game(board, trie, rack, bag)
+    game = new Game(board, trie, players, bag)
     game.updateBoard()
     highestScoringWord = GreedyAlgorithm
       .findHighestScoringWord(board, trie, rack, isStartingWord = false)
@@ -329,7 +350,7 @@ class GameTest extends AnyFunSuite {
     board.boardTiles(0)(9) = FilledBoardTile(X())
 
     rack.setRack(List(C(), V(), Y(), I(), A(), B(), E()).to(ListBuffer))
-    game = new Game(board, trie, rack, bag)
+    game = new Game(board, trie, players, bag)
     game.updateBoard()
     highestScoringWord = GreedyAlgorithm
       .findHighestScoringWord(board, trie, rack, isStartingWord = false)
@@ -339,27 +360,62 @@ class GameTest extends AnyFunSuite {
     assert(highestScoringWord.score === 30)
   }
 
-  test("Should correctly simulate whole game without errors") {
+  test("Should correctly simulate whole single player game without errors") {
 
     val board: Board = new Board(initialiseBoard(), trie)
-    val game: Game = new Game(board, trie, rack, bag)
+    val bag: Bag = createInitialBag()
+    val player1: Player = new Player("Player1", new Rack(new ListBuffer[PlayerTile]), new ListBuffer[HighestScoringWord])
+    val players: List[Player] = List(player1)
+    val game: Game = new Game(board, trie, players, bag)
     var gameInProgress: Boolean = true
     var tilesPlaced: Int = 100 - bag.tiles.size
 
-    assertResult(tilesPlaced)(0)
-    assertResult(rack.tiles.length)( 0)
+    assertResult(0)(tilesPlaced)
+    players.foreach(player => assertResult(player.rack.tiles.length)(0))
     board.printBoard()
 
-    val highestScoringWord: HighestScoringWord = game.playerMove(Algorithm.GREEDY, isStartingWord = true)
-    tilesPlaced += highestScoringWord.tilesUsed.length
+    game.initializeGame()
+
+    game.gameTurn(isStartingTurn = true)
+    tilesPlaced += players.map(player => player.placedWords.last.tilesUsed.length).sum
 
     while (gameInProgress) {
-      val highestScoringWord: HighestScoringWord = game.playerMove(Algorithm.GREEDY, isStartingWord = false)
-      tilesPlaced += highestScoringWord.tilesUsed.length
-      if (highestScoringWord.word === "") gameInProgress = false
+      game.gameTurn(isStartingTurn = false)
+      tilesPlaced += players.map(player => player.placedWords.last.tilesUsed.length).sum
+      if (players.map(player => player.placedWords.last.word).contains("")) gameInProgress = false
     }
-    assertResult(tilesPlaced)(100)
-    assertResult(board.countFilledBoardTiles())(100)
-    println("Done")
+    assertResult(100)(tilesPlaced)
+    assertResult(100)(board.countFilledBoardTiles())
+    game.printFinalScores()
+  }
+
+  test("Should correctly simulate two player player game without errors") {
+
+    val board: Board = new Board(initialiseBoard(), trie)
+    val bag: Bag = createInitialBag()
+    val player1: Player = new Player("Player1", new Rack(new ListBuffer[PlayerTile]), new ListBuffer[HighestScoringWord])
+    val player2: Player = new Player("Player2", new Rack(new ListBuffer[PlayerTile]), new ListBuffer[HighestScoringWord])
+    val players: List[Player] = List(player1, player2)
+    val game: Game = new Game(board, trie, players, bag)
+    var gameInProgress: Boolean = true
+    var tilesPlaced: Int = 100 - bag.tiles.size
+
+    assertResult(0)(tilesPlaced)
+    players.foreach(player => assertResult(player.rack.tiles.length)(0))
+    board.printBoard()
+
+    game.initializeGame()
+
+    game.gameTurn(isStartingTurn = true)
+    tilesPlaced += players.map(player => player.placedWords.last.tilesUsed.length).sum
+
+    while (gameInProgress) {
+      game.gameTurn(isStartingTurn = false)
+      tilesPlaced += players.map(player => player.placedWords.last.tilesUsed.length).sum
+      if (players.map(player => player.placedWords.last.word).contains("")) gameInProgress = false
+    }
+    assertResult(100)(tilesPlaced)
+    assertResult(100)(board.countFilledBoardTiles())
+    game.printFinalScores()
   }
 }

@@ -10,6 +10,8 @@ class ErrorGameStateTest extends AnyFunSuite {
   val bag: Bag = createInitialBag()
 
   test("Should pass Error game state 1") {
+    val player1: Player = new Player("Player1", rack, new ListBuffer[HighestScoringWord])
+    val players: List[Player] = List(player1)
     val board: Board = new Board(initialiseBoard(), trie)
 
     board.boardTiles(7)(7) = FilledBoardTile(V())
@@ -36,7 +38,7 @@ class ErrorGameStateTest extends AnyFunSuite {
 
     rack.setRack(List(G(), C(), D(), N(), O(), E(), E()).to(ListBuffer))
 
-    val game: Game = new Game(board, trie, rack, bag)
+    val game: Game = new Game(board, trie, players, bag)
     game.updateBoard()
 
     assert(board.boardTiles.length === 15)
@@ -56,6 +58,8 @@ class ErrorGameStateTest extends AnyFunSuite {
   }
 
   test("Should pass Error game state 2") {
+    val player1: Player = new Player("Player1", rack, new ListBuffer[HighestScoringWord])
+    val players: List[Player] = List(player1)
     val board: Board = new Board(initialiseBoard(), trie)
 
     board.boardTiles(7)(7) = FilledBoardTile(V())
@@ -76,7 +80,7 @@ class ErrorGameStateTest extends AnyFunSuite {
 
     rack.setRack(List(E(), N(), C(), L(), A(), V(), E()).to(ListBuffer))
 
-    val game: Game = new Game(board, trie, rack, bag)
+    val game: Game = new Game(board, trie, players, bag)
     game.updateBoard()
 
     assert(board.boardTiles.length === 15)
