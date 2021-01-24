@@ -39,7 +39,7 @@ object RackHeuristicUtilities {
 
   private def getScoreForLetterCount(lMap: (Char, Int)): Double = {
     1.to(lMap._2)
-      .map(x => firstRackHeuristicMapping(lMap._1) + ((x - 1) * multipleRackHeuristicMapping(lMap._1)))
+      .map(x => firstRackHeuristicMapping(lMap._1) + ((x - 1) * multipleRackHeuristicMapping.getOrElse(lMap._1, 0.0)))
       .sum
   }
 

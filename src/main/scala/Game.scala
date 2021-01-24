@@ -32,7 +32,7 @@ class Game(board: Board, trie: Trie, players: List[Player], bag: Bag) {
 
   private def playerMove(player: Player, isStartingWord: Boolean): ScoringWord = player.algorithm match {
     case Algorithm.OPTIMAL =>
-      OptimalAlgorithm.findOptimalPlay(player.rack)
+      OptimalAlgorithm.findHighestScoringWord(board, trie, player.rack, isStartingWord)
     case Algorithm.GREEDY =>
       player.rack.printRack()
       val highestScoringWord = GreedyAlgorithm.findHighestScoringWord(board, trie, player.rack, isStartingWord)
