@@ -7,8 +7,8 @@ import scala.collection.mutable.ListBuffer
 object BoardUtilities {
 
   def findPossibleScoringWords(board: Board, trie: Trie, rack: Rack,
-                               isStartingWord: Boolean): mutable.HashSet[HighestScoringWord] = {
-    val highestScoringWords: mutable.HashSet[HighestScoringWord] = new mutable.HashSet[HighestScoringWord]()
+                               isStartingWord: Boolean): mutable.HashSet[ScoringWord] = {
+    val highestScoringWords: mutable.HashSet[ScoringWord] = new mutable.HashSet[ScoringWord]()
 
     for (x <- board.boardTiles.indices) {
       for (y <- board.boardTiles(x).indices) {
@@ -302,7 +302,8 @@ object BoardUtilities {
   }
 
   final def createHighestScoringWord(trie: Trie, initX: Int, initY: Int, totalPoints: Int, tilesUsed: ListBuffer[PlayerTile],
-                                     crossCheckPoints: Int, direction: Direction.Value): HighestScoringWord = {
-    new HighestScoringWord(trie.completedWord, initX, initY, totalPoints, crossCheckPoints, tilesUsed, direction)
+                                     crossCheckPoints: Int, direction: Direction.Value): ScoringWord = {
+    new ScoringWord(trie.completedWord, initX, initY, totalPoints, crossCheckPoints,
+      tilesUsed, direction, 0)
   }
 }
