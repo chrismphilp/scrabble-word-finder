@@ -9,7 +9,7 @@ class GameUtilitiesTest extends AnyFunSuite {
         .zip(initialisedBoard(x).reverse.view)
         .forall({
           case (a, b) =>
-            a.multiplier == b.multiplier &&
+             a.multiplier == b.multiplier &&
               a.tile.isEmpty == b.tile.isEmpty
         })
     }
