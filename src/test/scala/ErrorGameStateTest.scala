@@ -6,11 +6,11 @@ import scala.collection.mutable.ListBuffer
 
 class ErrorGameStateTest extends AnyFunSuite {
   val trie: Trie = FileProcessor.convertFileToTrie("collins-scrabble-words-2019.txt")
-  val rack: Rack = new Rack(new ListBuffer[PlayerTile])
+  val rack: Rack = new Rack()
   val bag: Bag = createInitialBag()
 
   test("Should pass Error game state 1") {
-    val player1: Player = new Player("Player1", rack, new ListBuffer[ScoringWord])
+    val player1: Player = new Player("Player1", Algorithm.GREEDY, rack)
     val players: List[Player] = List(player1)
     val board: Board = new Board(initialiseBoard(), trie)
 
@@ -58,7 +58,7 @@ class ErrorGameStateTest extends AnyFunSuite {
   }
 
   test("Should pass Error game state 2") {
-    val player1: Player = new Player("Player1", rack, new ListBuffer[ScoringWord])
+    val player1: Player = new Player("Player1", Algorithm.GREEDY, rack)
     val players: List[Player] = List(player1)
     val board: Board = new Board(initialiseBoard(), trie)
 

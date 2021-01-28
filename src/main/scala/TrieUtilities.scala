@@ -22,7 +22,7 @@ object TrieUtilities {
     } else {
       val c = word.charAt(step)
       if (Option(curr.children(c - 65)).isEmpty) {
-        curr.children(c - 65) = new Trie(c, false, "", new Array[Trie](26))
+        curr.children(c - 65) = new Trie(c)
       }
       insert(curr.children(c - 65), word, step + 1)
     }

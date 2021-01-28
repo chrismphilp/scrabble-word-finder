@@ -12,7 +12,7 @@ import scala.collection.mutable.ListBuffer
   5) For all anchor points (feasible from rack), generate the right part of possible words
   6) Combine letters multipliers as going, and compute word multipliers when end of word is found
  */
-class Game(board: Board, trie: Trie, players: List[Player], bag: Bag) {
+class Game(board: Board, trie: Trie, var players: List[Player], bag: Bag) {
 
   def initializeGame(): Unit = {
     players.foreach(player => player.rack.fillRack(bag))
@@ -21,36 +21,44 @@ class Game(board: Board, trie: Trie, players: List[Player], bag: Bag) {
 
   def updateBoard(): Unit = board.updateBoard()
 
-  def gameTurn(isStartingTurn: Boolean): Unit = {
+  def gameTurn(isStartingTurn: Boolean, showWordDefinition: Boolean): Unit = {
     if (isStartingTurn) {
-      playerMove(players.head, isStartingWord = true)
-      players.tail.foreach(player => playerMove(player, isStartingWord = false))
+      playerMove(players.head, showWordDefinition)
+      players.tail.foreach(player => playerMove(player, showWordDefinition))
     } else {
-      players.foreach(player => playerMove(player, isStartingWord = false))
+      players.foreach(player => playerMove(player, showWordDefinition))
     }
   }
 
-  private def playerMove(player: Player, isStartingWord: Boolean): ScoringWord = player.algorithm match {
-    case Algorithm.OPTIMAL =>
-      OptimalAlgorithm.findHighestScoringWord(board, trie, player.rack, isStartingWord)
-    case Algorithm.GREEDY =>
-      player.rack.printRack()
-      val highestScoringWord = GreedyAlgorithm.findHighestScoringWord(board, trie, player.rack)
-      placeHighestScoringWord(player, highestScoringWord)
-      player.placedWords += highestScoringWord
-      player.score += highestScoringWord.score
-      player.rack.fillRack(bag)
-      updateBoard()
-      board.printBoard()
-      highestScoringWord
+  private def playerMove(player: Player, showWordDefinition: Boolean): ScoringWord = {
+    player.rack.printRack()
+    val highestScoringWord = getCorrectAlgorithmMove(player.algorithm, board, trie, player.rack)
+    placeHighestScoringWord(player, highestScoringWord, showWordDefinition)
+    player.placedWords += highestScoringWord
+    player.score += highestScoringWord.score
+    player.rack.fillRack(bag)
+    updateBoard()
+    board.printBoard()
+    highestScoringWord
   }
 
-  private def placeHighestScoringWord(player: Player, highestScoringWord: ScoringWord): Unit = {
+  private def getCorrectAlgorithmMove(algorithm: Algorithm.Value, board: Board,
+                                      trie: Trie, rack: Rack): ScoringWord = algorithm match {
+    case Algorithm.OPTIMAL =>
+      OptimalAlgorithm.findHighestScoringWord(board, trie, rack)
+    case Algorithm.GREEDY =>
+      GreedyAlgorithm.findHighestScoringWord(board, trie, rack)
+  }
+
+  private def placeHighestScoringWord(player: Player, highestScoringWord: ScoringWord,
+                                      showWordDefinition: Boolean): Unit = {
     println(s"${player.name} score prior to placing word: ${player.score}")
     println(s"${player.name} placing ${highestScoringWord.direction} word: ${highestScoringWord.word}")
     println(s"Word placed at: ${highestScoringWord.x}, ${highestScoringWord.y} for ${highestScoringWord.score} points.")
     println(s"Used tiles: ${highestScoringWord.tilesUsed.map(tile => tile.letter).mkString(",")}")
-    println(s"Definition: ${WordDefinition.getWordDefinition(highestScoringWord.word)}")
+    if (showWordDefinition) {
+      println(s"Definition: ${WordDefinition.getWordDefinition(highestScoringWord.word)}")
+    }
     val newTiles: ListBuffer[PlayerTile] = player.rack.tiles.clone()
 
     if (highestScoringWord.direction.equals(Direction.HORIZONTAL)) {

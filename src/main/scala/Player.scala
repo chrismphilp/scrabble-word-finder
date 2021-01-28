@@ -1,7 +1,7 @@
 import scala.collection.mutable.ListBuffer
 
 class Player(val name: String,
-             var rack: Rack,
-             var placedWords: ListBuffer[ScoringWord],
-             val algorithm: Algorithm.Value = Algorithm.GREEDY,
+             val algorithm: Algorithm.Value,
+             var rack: Rack = new Rack(),
+             var placedWords: ListBuffer[ScoringWord] = new ListBuffer[ScoringWord],
              var score: Int = 0)

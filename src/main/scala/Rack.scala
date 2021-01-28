@@ -1,6 +1,6 @@
 import scala.collection.mutable.ListBuffer
 
-class Rack(var tiles: ListBuffer[PlayerTile]) {
+class Rack(var tiles: ListBuffer[PlayerTile] = new ListBuffer[PlayerTile]) {
   def fillRack(bag: Bag): Unit = tiles ++= bag.drawTiles(7 - tiles.length)
 
   def setRack(tiles: ListBuffer[PlayerTile]): Unit = this.tiles = tiles

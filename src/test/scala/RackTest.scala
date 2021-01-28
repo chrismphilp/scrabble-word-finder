@@ -9,7 +9,7 @@ import scala.collection.mutable.ListBuffer
 class RackTest extends AnyFunSuite {
   val trie: Trie = FileProcessor.convertFileToTrie("collins-scrabble-words-2019.txt")
   val bag: Bag = TileUtilities.createInitialBag()
-  val rack: Rack = new Rack(new ListBuffer[PlayerTile])
+  val rack: Rack = new Rack()
 
   test("Should correctly fill initial Rack") {
     rack.fillRack(bag)

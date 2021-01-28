@@ -2,7 +2,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 object OptimalAlgorithm {
-  def findHighestScoringWord(board: Board, trie: Trie, rack: Rack, isStartingWord: Boolean): ScoringWord = {
+  def findHighestScoringWord(board: Board, trie: Trie, rack: Rack): ScoringWord = {
     val scoringWords: mutable.HashSet[ScoringWord] = BoardUtilities
       .findPossibleScoringWords(board, trie, rack)
     updateRackHeuristics(rack, scoringWords)
@@ -10,7 +10,7 @@ object OptimalAlgorithm {
       new ScoringWord("", 0, 0, 0, 0,
         ListBuffer.empty, Direction.HORIZONTAL, 0)
     }
-    else scoringWords.maxBy(_.score)
+    else scoringWords.maxBy(v => v.score + v.remainingRackHeuristicScore)
   }
 
   def updateRackHeuristics(rack: Rack, scoringWords: mutable.HashSet[ScoringWord]): Unit = {
