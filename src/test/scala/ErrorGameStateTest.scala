@@ -51,7 +51,7 @@ class ErrorGameStateTest extends AnyFunSuite {
     assert(board.boardTiles(6)(9).verticalCrossChecks.contains('O') === false)
 
     val highestScoringWord: ScoringWord = GreedyAlgorithm
-      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
+      .findHighestScoringWord(board, trie, rack)
 
     assert(board.boardTiles(10)(7).requiresBelowCrossCheck === true)
     assert(highestScoringWord.word === "COGGED")
@@ -87,7 +87,7 @@ class ErrorGameStateTest extends AnyFunSuite {
     assert(board.boardTiles(0).length === 15)
 
     val highestScoringWord: ScoringWord = GreedyAlgorithm
-      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
+      .findHighestScoringWord(board, trie, rack)
 
     assert(List("VALENCE", "ENCLAVE").contains(highestScoringWord.word))
     assert(highestScoringWord.x === 10)

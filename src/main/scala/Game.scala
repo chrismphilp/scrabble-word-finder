@@ -35,7 +35,7 @@ class Game(board: Board, trie: Trie, players: List[Player], bag: Bag) {
       OptimalAlgorithm.findHighestScoringWord(board, trie, player.rack, isStartingWord)
     case Algorithm.GREEDY =>
       player.rack.printRack()
-      val highestScoringWord = GreedyAlgorithm.findHighestScoringWord(board, trie, player.rack, isStartingWord)
+      val highestScoringWord = GreedyAlgorithm.findHighestScoringWord(board, trie, player.rack)
       placeHighestScoringWord(player, highestScoringWord)
       player.placedWords += highestScoringWord
       player.score += highestScoringWord.score

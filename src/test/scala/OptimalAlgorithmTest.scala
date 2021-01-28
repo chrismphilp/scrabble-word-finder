@@ -14,11 +14,11 @@ class OptimalAlgorithmTest extends AnyFunSuite {
 
     var highestScoringWord: ScoringWord = OptimalAlgorithm
       .findHighestScoringWord(board, trie, rack, isStartingWord = true)
-    assertResult(-1.0)(highestScoringWord.remainingRackHeuristicScore)
+    assertResult(0.0)(highestScoringWord.remainingRackHeuristicScore)
 
     rack.setRack(List(P(), Y(), X(), S(), M(), A()).to(ListBuffer))
     highestScoringWord = OptimalAlgorithm.findHighestScoringWord(board, trie, rack, isStartingWord = true)
-    assertResult(7.5)(highestScoringWord.remainingRackHeuristicScore)
+    assertResult(8.5)(highestScoringWord.remainingRackHeuristicScore)
   }
 
   test("Should assign correct remaining rack heuristic value for duplicated letters") {
@@ -28,11 +28,11 @@ class OptimalAlgorithmTest extends AnyFunSuite {
 
     var highestScoringWord: ScoringWord = OptimalAlgorithm
       .findHighestScoringWord(board, trie, rack, isStartingWord = true)
-    assertResult(2)(highestScoringWord.remainingRackHeuristicScore)
+    assertResult(-3.0)(highestScoringWord.remainingRackHeuristicScore)
 
     rack.setRack(List(A(), A(), A(), A(), A()).to(ListBuffer))
 
     highestScoringWord = OptimalAlgorithm.findHighestScoringWord(board, trie, rack, isStartingWord = true)
-    assertResult(18.0)(highestScoringWord.remainingRackHeuristicScore)
+    assertResult(-9.0)(highestScoringWord.remainingRackHeuristicScore)
   }
 }

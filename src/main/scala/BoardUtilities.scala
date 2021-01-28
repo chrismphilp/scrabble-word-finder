@@ -6,8 +6,7 @@ import scala.collection.mutable.ListBuffer
 
 object BoardUtilities {
 
-  def findPossibleScoringWords(board: Board, trie: Trie, rack: Rack,
-                               isStartingWord: Boolean): mutable.HashSet[ScoringWord] = {
+  def findPossibleScoringWords(board: Board, trie: Trie, rack: Rack): mutable.HashSet[ScoringWord] = {
     val highestScoringWords: mutable.HashSet[ScoringWord] = new mutable.HashSet[ScoringWord]()
 
     for (x <- board.boardTiles.indices) {
@@ -23,9 +22,8 @@ object BoardUtilities {
             extendRight(x, startingPoint, x, y, rack.tiles, new ListBuffer[PlayerTile], startingHorizontal._1, startingHorizontal._2,
               0, rack.tiles.length, new ListBuffer[Multiplier.Value], 0)
           } else if (!boardTile.requiresLeftCrossCheck) {
-            val horizontalLimit: Int = findHorizontalLimit(board, rack, x, y, 0)
-            extendLeft(x, y, x, y, rack.tiles, horizontalLimit, 0, trie,
-              0, isStartingWord)
+            val horizontalLimit: Int = findHorizontalLimit(board.boardTiles, rack.tiles.length, x, y, 0)
+            extendLeft(x, y, x, y, rack.tiles, horizontalLimit, 0, trie, 0)
           }
 
           // Vertical words
@@ -35,25 +33,22 @@ object BoardUtilities {
             extendBelow(startingPoint, y, x, y, rack.tiles, new ListBuffer[PlayerTile], startingVertical._1,
               startingVertical._2, 0, rack.tiles.length, new ListBuffer[Multiplier.Value], 0)
           } else if (!boardTile.requiresAboveCrossCheck) {
-            val verticalLimit: Int = findVerticalLimit(board, rack, x, y, 0)
-            extendAbove(x, y, x, y, rack.tiles, verticalLimit, 0,
-              trie, 0, isStartingWord)
+            val verticalLimit: Int = findVerticalLimit(board.boardTiles, rack.tiles.length, x, y, 0)
+            extendAbove(x, y, x, y, rack.tiles, verticalLimit, 0, trie, 0)
           }
         }
       }
     }
 
     @tailrec
-     def extendLeft(initX: Int, initY: Int, currX: Int, currY: Int, letters: ListBuffer[PlayerTile],
-                   limit: Int, distanceFromOrigin: Int, currTrie: Trie, currPoints: Int,
-                   isStartingWord: Boolean): Unit = {
+    def extendLeft(initX: Int, initY: Int, currX: Int, currY: Int, letters: ListBuffer[PlayerTile],
+                   limit: Int, distanceFromOrigin: Int, currTrie: Trie, currPoints: Int): Unit = {
 
       extendRight(initX, initY, currX, currY, letters, new ListBuffer[PlayerTile], currTrie, currPoints,
-        0, letters.length, new ListBuffer[Multiplier.Value],
-        if (isStartingWord) 0 else distanceFromOrigin)
+        0, letters.length, new ListBuffer[Multiplier.Value], distanceFromOrigin)
       if (limit > 0) {
         extendLeft(initX, initY - 1, currX, currY - 1, letters, limit - 1, distanceFromOrigin + 1,
-          currTrie, currPoints, isStartingWord)
+          currTrie, currPoints)
       }
     }
 
@@ -145,14 +140,13 @@ object BoardUtilities {
 
     @tailrec
     def extendAbove(initX: Int, initY: Int, currX: Int, currY: Int, letters: ListBuffer[PlayerTile],
-                    limit: Int, distanceFromOrigin: Int, currTrie: Trie, currPoints: Int,
-                    isStartingWord: Boolean): Unit = {
+                    limit: Int, distanceFromOrigin: Int, currTrie: Trie, currPoints: Int): Unit = {
 
       extendBelow(initX, initY, currX, currY, letters, new ListBuffer[PlayerTile], currTrie, currPoints,
         0, letters.length, new ListBuffer[Multiplier.Value], distanceFromOrigin)
       if (limit > 0) {
         extendAbove(initX - 1, initY, currX - 1, currY, letters, limit - 1, distanceFromOrigin + 1,
-          currTrie, currPoints, isStartingWord)
+          currTrie, currPoints)
       }
     }
 
@@ -257,7 +251,7 @@ object BoardUtilities {
 
   @tailrec
   private final def updateHorizontalStartingTrie(board: Board, x: Int, y: Int, targetY: Int,
-                                         tmpTrie: Trie, wordPoints: Int): (Trie, Int) = {
+                                                 tmpTrie: Trie, wordPoints: Int): (Trie, Int) = {
     if (y == targetY) (tmpTrie, wordPoints)
     else {
       updateHorizontalStartingTrie(board, x, y + 1, targetY,
@@ -267,12 +261,12 @@ object BoardUtilities {
   }
 
   @tailrec
-  private final def findHorizontalLimit(board: Board, rack: Rack, x: Int, y: Int,
-                                limit: Int): Int = (x, y, limit) match {
+  private final def findHorizontalLimit(boardTiles: Array[Array[BoardTile]], rackLength: Int, x: Int, y: Int,
+                                        limit: Int): Int = (x, y, limit) match {
     case (_, 0, _) => limit
-    case (_, _, limit) if limit == rack.tiles.length - 1 => limit
-    case (x, y, limit) if board.boardTiles(x)(y - 1).isAnchor => limit
-    case (x, y, limit) => findHorizontalLimit(board, rack, x, y - 1, limit + 1)
+    case (_, _, limit) if limit == rackLength - 1 => limit
+    case (x, y, limit) if boardTiles(x)(y - 1).isAnchor => limit
+    case (x, y, limit) => findHorizontalLimit(boardTiles, rackLength, x, y - 1, limit + 1)
   }
 
   @tailrec
@@ -294,11 +288,12 @@ object BoardUtilities {
   }
 
   @tailrec
-  final def findVerticalLimit(board: Board, rack: Rack, x: Int, y: Int, limit: Int): Int = (x, y, limit) match {
+  final def findVerticalLimit(boardTiles: Array[Array[BoardTile]], rackLength: Int, x: Int, y: Int,
+                              limit: Int): Int = (x, y, limit) match {
     case (0, _, _) => limit
-    case (_, _, limit) if limit == rack.tiles.length - 1 => limit
-    case (x, y, limit) if board.boardTiles(x - 1)(y).isAnchor => limit
-    case (x, y, limit) => findVerticalLimit(board, rack, x - 1, y, limit + 1)
+    case (_, _, limit) if limit == rackLength - 1 => limit
+    case (x, y, limit) if boardTiles(x - 1)(y).isAnchor => limit
+    case (x, y, limit) => findVerticalLimit(boardTiles, rackLength, x - 1, y, limit + 1)
   }
 
   final def createHighestScoringWord(trie: Trie, initX: Int, initY: Int, totalPoints: Int, tilesUsed: ListBuffer[PlayerTile],

@@ -40,7 +40,7 @@ class GameTest extends AnyFunSuite {
     game.updateBoard()
 
     val highestScoringWord: ScoringWord = GreedyAlgorithm
-      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
+      .findHighestScoringWord(board, trie, rack)
 
     assert(highestScoringWord.score === 42)
   }
@@ -92,7 +92,7 @@ class GameTest extends AnyFunSuite {
     game.updateBoard()
 
     val highestScoringWord: ScoringWord = GreedyAlgorithm
-      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
+      .findHighestScoringWord(board, trie, rack)
 
     assert(highestScoringWord.score === 27)
   }
@@ -148,7 +148,7 @@ class GameTest extends AnyFunSuite {
     game.updateBoard()
 
     val highestScoringWord: ScoringWord = GreedyAlgorithm
-      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
+      .findHighestScoringWord(board, trie, rack)
 
     assert(highestScoringWord.word === "RAPE")
     assert(highestScoringWord.score === 37)
@@ -219,7 +219,7 @@ class GameTest extends AnyFunSuite {
     game.updateBoard()
 
     val highestScoringWord: ScoringWord = GreedyAlgorithm
-      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
+      .findHighestScoringWord(board, trie, rack)
 
     assert(highestScoringWord.word === "PASH")
     assert(highestScoringWord.score === 18)
@@ -236,21 +236,21 @@ class GameTest extends AnyFunSuite {
     val game: Game = new Game(board, trie, players, bag)
     game.initializeGame()
     var highestScoringWord: ScoringWord = GreedyAlgorithm
-      .findHighestScoringWord(board, trie, rack, isStartingWord = true)
+      .findHighestScoringWord(board, trie, rack)
 
     assert(highestScoringWord.score === 74)
 
     rack.setRack(List(D(), E(), Y(), N(), O(), R(), T()).to(ListBuffer))
     game.initializeGame()
     highestScoringWord = GreedyAlgorithm
-      .findHighestScoringWord(board, trie, rack, isStartingWord = true)
+      .findHighestScoringWord(board, trie, rack)
 
     assert(highestScoringWord.score === 28)
 
     rack.setRack(List(Z(), E(), L(), N(), O(), R(), S()).to(ListBuffer))
     game.initializeGame()
     highestScoringWord = GreedyAlgorithm
-      .findHighestScoringWord(board, trie, rack, isStartingWord = true)
+      .findHighestScoringWord(board, trie, rack)
 
     assert(highestScoringWord.score === 50)
   }
@@ -286,7 +286,7 @@ class GameTest extends AnyFunSuite {
     game.updateBoard()
 
     var highestScoringWord: ScoringWord = GreedyAlgorithm
-      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
+      .findHighestScoringWord(board, trie, rack)
 
     assert(highestScoringWord.word === "PRESALE")
     assert(highestScoringWord.score === 96)
@@ -307,7 +307,7 @@ class GameTest extends AnyFunSuite {
     game = new Game(board, trie, players, bag)
     game.updateBoard()
     highestScoringWord = GreedyAlgorithm
-      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
+      .findHighestScoringWord(board, trie, rack)
 
     assert(highestScoringWord.score === 70)
 
@@ -324,7 +324,7 @@ class GameTest extends AnyFunSuite {
     game = new Game(board, trie, players, bag)
     game.updateBoard()
     highestScoringWord = GreedyAlgorithm
-      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
+      .findHighestScoringWord(board, trie, rack)
 
     assert(highestScoringWord.score === 39)
 
@@ -339,7 +339,7 @@ class GameTest extends AnyFunSuite {
     game = new Game(board, trie, players, bag)
     game.updateBoard()
     highestScoringWord = GreedyAlgorithm
-      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
+      .findHighestScoringWord(board, trie, rack)
 
     assert(highestScoringWord.word === "DOUX")
     assert(highestScoringWord.score === 47)
@@ -353,7 +353,7 @@ class GameTest extends AnyFunSuite {
     game = new Game(board, trie, players, bag)
     game.updateBoard()
     highestScoringWord = GreedyAlgorithm
-      .findHighestScoringWord(board, trie, rack, isStartingWord = false)
+      .findHighestScoringWord(board, trie, rack)
 
     assert(board.boardTiles(6)(6).verticalCrossChecks.contains('Y') === true)
 

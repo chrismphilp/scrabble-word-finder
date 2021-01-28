@@ -32,7 +32,11 @@ object RackHeuristicUtilities {
     'V' -> -3.5, 'W' -> -4.5,
     'Y' -> -4.5, ' ' -> -15.0)
 
-  def getRackHeuristicValue(letters: ListBuffer[Char]): Double = {
+  def getTotalHeuristicValue(letters: ListBuffer[Char]): Double = {
+    getRemainingRackHeuristicValue(letters) + getVowelConsonantRatioScore(letters)
+  }
+
+  def getRemainingRackHeuristicValue(letters: ListBuffer[Char]): Double = {
     val letterCounts: MapView[Char, Int] = letters.groupBy(identity).view.mapValues(_.size)
     letterCounts.map(v => getScoreForLetterCount(v)).sum
   }
