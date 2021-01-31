@@ -21,24 +21,24 @@ class Game(board: Board, trie: Trie, var players: List[Player], bag: Bag) {
 
   def updateBoard(): Unit = board.updateBoard()
 
-  def gameTurn(isStartingTurn: Boolean, showWordDefinition: Boolean): Unit = {
+  def gameTurn(isStartingTurn: Boolean, showMoveState: Boolean, showWordDefinition: Boolean): Unit = {
     if (isStartingTurn) {
-      playerMove(players.head, showWordDefinition)
-      players.tail.foreach(player => playerMove(player, showWordDefinition))
+      playerMove(players.head, showMoveState, showWordDefinition)
+      players.tail.foreach(player => playerMove(player, showMoveState, showWordDefinition))
     } else {
-      players.foreach(player => playerMove(player, showWordDefinition))
+      players.foreach(player => playerMove(player, showMoveState, showWordDefinition))
     }
   }
 
-  private def playerMove(player: Player, showWordDefinition: Boolean): ScoringWord = {
-    player.rack.printRack()
+  private def playerMove(player: Player, showMoveState: Boolean, showWordDefinition: Boolean): ScoringWord = {
+    if (showMoveState) player.rack.printRack()
     val highestScoringWord = getCorrectAlgorithmMove(player.algorithm, board, trie, player.rack)
-    placeHighestScoringWord(player, highestScoringWord, showWordDefinition)
+    placeHighestScoringWord(player, highestScoringWord, showMoveState, showWordDefinition)
     player.placedWords += highestScoringWord
     player.score += highestScoringWord.score
     player.rack.fillRack(bag)
     updateBoard()
-    board.printBoard()
+    if (showMoveState) board.printBoard()
     highestScoringWord
   }
 
@@ -51,14 +51,8 @@ class Game(board: Board, trie: Trie, var players: List[Player], bag: Bag) {
   }
 
   private def placeHighestScoringWord(player: Player, highestScoringWord: ScoringWord,
-                                      showWordDefinition: Boolean): Unit = {
-    println(s"${player.name} score prior to placing word: ${player.score}")
-    println(s"${player.name} placing ${highestScoringWord.direction} word: ${highestScoringWord.word}")
-    println(s"Word placed at: ${highestScoringWord.x}, ${highestScoringWord.y} for ${highestScoringWord.score} points.")
-    println(s"Used tiles: ${highestScoringWord.tilesUsed.map(tile => tile.letter).mkString(",")}")
-    if (showWordDefinition) {
-      println(s"Definition: ${WordDefinition.getWordDefinition(highestScoringWord.word)}")
-    }
+                                      showMoveState: Boolean, showWordDefinition: Boolean): Unit = {
+    printMoveState(player, highestScoringWord, showMoveState, showWordDefinition)
     val newTiles: ListBuffer[PlayerTile] = player.rack.tiles.clone()
 
     if (highestScoringWord.direction.equals(Direction.HORIZONTAL)) {
@@ -91,6 +85,19 @@ class Game(board: Board, trie: Trie, var players: List[Player], bag: Bag) {
       }
     }
     player.rack.setRack(newTiles)
+  }
+
+  def printMoveState(player: Player, highestScoringWord: ScoringWord,
+                     showMoveState: Boolean, showWordDefinition: Boolean): Unit = {
+    if (showMoveState) {
+      println(s"${player.name} score prior to placing word: ${player.score}.")
+      println(s"${player.name} placing ${highestScoringWord.direction} word: ${highestScoringWord.word}.")
+      println(s"Word placed at: ${highestScoringWord.x}, ${highestScoringWord.y} for ${highestScoringWord.score} points.")
+      println(s"Used tiles: ${highestScoringWord.tilesUsed.map(tile => tile.letter).mkString(",")}.")
+      if (showWordDefinition) {
+        println(s"Definition: ${WordDefinition.getWordDefinition(highestScoringWord.word)}.")
+      }
+    }
   }
 
   def printFinalScores(): Unit = {

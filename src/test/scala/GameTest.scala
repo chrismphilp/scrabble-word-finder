@@ -376,11 +376,11 @@ class GameTest extends AnyFunSuite {
 
     game.initializeGame()
 
-    game.gameTurn(isStartingTurn = true, showWordDefinition = true)
+    game.gameTurn(isStartingTurn = true, showMoveState = true, showWordDefinition = true)
     tilesPlaced += players.map(player => player.placedWords.last.tilesUsed.length).sum
 
     while (gameInProgress) {
-      game.gameTurn(isStartingTurn = false, showWordDefinition = true)
+      game.gameTurn(isStartingTurn = false, showMoveState = true, showWordDefinition = true)
       tilesPlaced += players.map(player => player.placedWords.last.tilesUsed.length).sum
       if (players.map(player => player.placedWords.last.word).contains("")) gameInProgress = false
     }
@@ -404,11 +404,11 @@ class GameTest extends AnyFunSuite {
 
     game.initializeGame()
 
-    game.gameTurn(isStartingTurn = true, showWordDefinition = true)
+    game.gameTurn(isStartingTurn = true, showMoveState = false, showWordDefinition = false)
     tilesPlaced += players.map(player => player.placedWords.last.tilesUsed.length).sum
 
     while (gameInProgress) {
-      game.gameTurn(isStartingTurn = false, showWordDefinition = true)
+      game.gameTurn(isStartingTurn = false, showMoveState = false, showWordDefinition = false)
       tilesPlaced += players.map(player => player.placedWords.last.tilesUsed.length).sum
       if (players.map(player => player.placedWords.last.word).contains("")) gameInProgress = false
     }
@@ -416,19 +416,24 @@ class GameTest extends AnyFunSuite {
   }
 
   test(s"Should correctly simulate ${Algorithm.OPTIMAL} vs. ${Algorithm.GREEDY} full game") {
-    val game: Game = simulateGreedyVsOptimal()
-    game.printFinalScores()
+    simulateGreedyVsOptimal()
   }
 
   test(s"${Algorithm.OPTIMAL} should beat ${Algorithm.GREEDY} in the majority of games") {
     var optimalAlgorithmWins = 0
     var greedyAlgorithmWins = 0
-    0.to(50).foreach(_ => {
+    0.until(50).foreach(_ => {
       val game: Game = simulateGreedyVsOptimal()
-      val optimalWin = game.players.head.score > game.players(1).score
-      if (optimalWin) optimalAlgorithmWins += 1
+      val optimalScore: Int = game.players.filter(_.algorithm.equals(Algorithm.OPTIMAL)).head.score
+      val greedyScore: Int = game.players.filter(_.algorithm.equals(Algorithm.GREEDY)).head.score
+      if (optimalScore > greedyScore) optimalAlgorithmWins += 1
       else greedyAlgorithmWins += 1
     })
+    println("------------------------------------------------")
+    println(s"${Algorithm.OPTIMAL} won: $optimalAlgorithmWins")
+    println(s"${Algorithm.GREEDY} won: $greedyAlgorithmWins")
+    println("------------------------------------------------")
+    assert(optimalAlgorithmWins > greedyAlgorithmWins)
   }
 
   private def simulateGreedyVsOptimal(): Game = {
@@ -439,22 +444,18 @@ class GameTest extends AnyFunSuite {
     val players: List[Player] = List(greedyPlayer, optimalPlayer)
     val game: Game = new Game(board, trie, players, bag)
     var gameInProgress: Boolean = true
-    var tilesPlaced: Int = 100 - bag.tiles.size
 
-    assertResult(0)(tilesPlaced)
     players.foreach(player => assertResult(player.rack.tiles.length)(0))
     board.printBoard()
 
     game.initializeGame()
-
-    game.gameTurn(isStartingTurn = true, showWordDefinition = false)
-    tilesPlaced += players.map(player => player.placedWords.last.tilesUsed.length).sum
+    game.gameTurn(isStartingTurn = true, showMoveState = false, showWordDefinition = false)
 
     while (gameInProgress) {
-      game.gameTurn(isStartingTurn = false, showWordDefinition = false)
-      tilesPlaced += players.map(player => player.placedWords.last.tilesUsed.length).sum
+      game.gameTurn(isStartingTurn = false, showMoveState = false, showWordDefinition = false)
       if (players.map(player => player.placedWords.last.word).contains("")) gameInProgress = false
     }
+    game.printFinalScores()
     game
   }
 }
